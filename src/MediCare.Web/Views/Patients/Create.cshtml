@@ -25,6 +25,13 @@
                     form. No patient information has been saved.
                 </div>
             }
+             
+            @if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success">
+        @message
+    </div>
+}
 
             <form asp-controller="Patients"
                   asp-action="Create"
