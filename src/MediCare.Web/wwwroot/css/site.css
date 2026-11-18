@@ -1,0 +1,155 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+/* MediCare HMS - Brand Colors */
+
+:root {
+    --medicare-primary: #12314b;
+    --medicare-accent: #0d9488;
+    --medicare-background: #f5f8fc;
+}
+
+body {
+    background: var(--medicare-background);
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #203247;
+}
+
+/* Homepage Hero */
+
+.medicare-hero {
+    background: linear-gradient(
+        120deg,
+        #12314b,
+        #087f8c
+    );
+
+    color: white;
+    padding: 55px 45px;
+    border-radius: 20px;
+}
+
+.medicare-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #a8eee3;
+}
+
+.medicare-symbol {
+    width: 150px;
+    height: 150px;
+    background: rgba(255,255,255,0.12);
+    border: 3px solid rgba(255,255,255,0.25);
+    border-radius: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medicare-symbol span {
+    font-size: 100px;
+    line-height: 1;
+    font-weight: 300;
+    color: white;
+}
+
+/* Module Cards */
+
+.medicare-card {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid #e4eaf1;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    min-height: 205px;
+    height: 100%;
+    transition: transform 0.2s ease;
+}
+
+.medicare-card:hover {
+    transform: translateY(-4px);
+}
+
+.medicare-card h5 {
+    color: var(--medicare-primary);
+    font-weight: 700;
+}
+
+.medicare-card p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+@media (max-width: 576px) {
+    .medicare-hero {
+        padding: 32px 24px;
+    }
+}
+/* MediCare - Authentication Page */
+
+.medicare-login-brand {
+    background: linear-gradient(
+        145deg,
+        #102d46 0%,
+        #0a6370 65%,
+        #0d9488 100%
+    );
+
+    color: #ffffff;
+    min-height: 480px;
+}
+
+.medicare-login-brand h1 {
+    line-height: 1.2;
+}
+
+.form-control:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 0.2rem rgba(13,148,136,0.15);
+}
+
+.btn-primary {
+    background-color: #0d9488;
+    border-color: #0d9488;
+}
+
+.btn-primary:hover {
+    background-color: #08796f;
+    border-color: #08796f;
+}
+
+@media (max-width: 991px) {
+    .medicare-login-brand {
+        min-height: auto;
+    }
+}

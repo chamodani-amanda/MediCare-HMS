@@ -1,0 +1,39 @@
+# .NET build files
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Visual Studio and IDE files
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+*.user
+*.suo
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+secrets.json
+
+# Local development accounts
+.local/
+
+# Local database and backup files
+*.bak
+*.backup
+*.dump
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

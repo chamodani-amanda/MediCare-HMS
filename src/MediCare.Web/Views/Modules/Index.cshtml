@@ -1,0 +1,40 @@
+@model List<string>
+
+@{
+    ViewData["Title"] = "System Modules";
+}
+
+<section class="py-4">
+
+    <h1 class="fw-bold">MediCare Modules</h1>
+
+    <p class="text-muted">
+        Explore the hospital management modules
+        planned for MediCare.
+    </p>
+
+    <div class="row g-4 mt-2">
+
+        @foreach (var module in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="medicare-card">
+
+                    <h5>@module</h5>
+
+                    <p>
+                        This module will be developed
+                        in the upcoming stages.
+                    </p>
+
+                    <span class="badge text-bg-secondary">
+                        Planned
+                    </span>
+
+                </div>
+            </div>
+        }
+
+    </div>
+
+</section>
