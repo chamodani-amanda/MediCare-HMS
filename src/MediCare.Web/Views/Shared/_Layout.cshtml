@@ -1,7 +1,19 @@
-﻿<!DOCTYPE html>
+﻿
+
+@{
+    // Hide the long navigation menu on every page.
+    bool hideMainNavigationLinks = true;
+
+    // Login page shows the sign-in form, not a duplicate header Login button.
+    bool isLoginPage = (ViewData["IsLoginPage"] as bool?) == true;
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
@@ -19,112 +31,618 @@
     <link rel="stylesheet"
           href="~/MediCare.Web.styles.css"
           asp-append-version="true" />
+
+
+<style>
+    /* MediCare colorful header buttons */
+
+    .navbar .mc-nav-pill.btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+
+        min-height: 48px;
+        padding: 12px 21px !important;
+
+        border: none !important;
+        border-radius: 13px !important;
+
+        color: #ffffff !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        white-space: nowrap;
+
+        cursor: pointer;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            filter 0.2s ease !important;
+    }
+
+    .mc-nav-pill svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* Dashboard - Teal */
+
+    .navbar .mc-nav-dashboard.btn {
+        background: linear-gradient(
+            135deg, #10b6a5, #087e83
+        ) !important;
+
+        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Change Password - Purple */
+
+    .navbar .mc-nav-password.btn {
+        background: linear-gradient(
+            135deg, #8474ea, #5749ba
+        ) !important;
+
+        box-shadow: 0 4px 14px rgba(101, 84, 204, 0.25);
+    }
+
+    /* Logout - Coral Red */
+
+    .navbar .mc-nav-logout.btn {
+        background: linear-gradient(
+            135deg, #fa7380, #d83c57
+        ) !important;
+
+        box-shadow: 0 4px 14px rgba(227, 75, 94, 0.25);
+    }
+
+    /* Mouse hover animation */
+
+    .navbar .mc-nav-pill.btn:hover {
+        color: #ffffff !important;
+        transform: translateY(-3px);
+        filter: brightness(1.12);
+
+        box-shadow:
+            0 8px 22px rgba(20, 40, 65, 0.22) !important;
+    }
+
+    /* Click animation */
+
+    .navbar .mc-nav-pill.btn:active {
+        transform: scale(0.96);
+        filter: brightness(0.95);
+    }
+
+    /* Keyboard accessibility */
+
+    .navbar .mc-nav-pill.btn:focus-visible {
+        outline: 3px solid #f5c84c;
+        outline-offset: 3px;
+    }
+</style>
+
+
+<style>
+    /* ======================================
+       MEDICARE GLOBAL FOOTER - FINAL FIX
+       ====================================== */
+
+    /* Normal hospital pages */
+    body:not(.mc-login-layout) {
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        height: auto !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        margin-bottom: 0 !important;
+    }
+
+    /* Main content grows naturally */
+    body:not(.mc-login-layout) > .container {
+        flex: 1 0 auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Footer follows the complete page content */
+    body:not(.mc-login-layout) > footer.mc-site-footer {
+        position: static !important;
+        inset: auto !important;
+
+        display: block;
+        flex: none;
+
+        width: 100%;
+        height: auto !important;
+        min-height: 0 !important;
+
+        margin-top: auto !important;
+        margin-bottom: 0 !important;
+        padding: 14px 0 !important;
+
+        line-height: 1.5 !important;
+        white-space: normal !important;
+
+        background: #f6f9fc;
+        border-top: 1px solid #dce6ef;
+
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .mc-site-footer a {
+        color: #0d9488;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .mc-site-footer a:hover {
+        color: #075e70;
+        text-decoration: underline;
+    }
+</style>
+
+
 </head>
-<body>
+
+
+
+<body class="@(isLoginPage ? "mc-login-layout" : "")">
+
+    @if (!isLoginPage)
+    {
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MediCare</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        @if (User.IsInRole("Administrator") ||
-     User.IsInRole("Receptionist"))
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark"
-           asp-controller="Patients"
-           asp-action="Create">
-            Register Patient
-        </a>
-    </li>
-}
-                         
-@if (User.IsInRole("Administrator"))
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark"
-           asp-controller="StaffAccounts"
-           asp-action="Index">
-            Staff Accounts
-        </a>
-    </li>
-     <li class="nav-item">
-        <a class="nav-link"
-           asp-controller="SecurityAuditLogs"
-           asp-action="Index">
-            Security Audit Logs
-        </a>
-    </li>
-}
 
-                    </ul>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
+                <!-- MediCare brand shown on non-login pages -->
+                
 
-             @if (User.Identity?.IsAuthenticated == true)
-                {
-           <a class="btn btn-outline-primary"
-           asp-controller="Dashboard"
-           asp-action="Index">
-            Dashboard
-        </a>
+<a class="navbar-brand medicare-brand"
+   asp-area=""
+   asp-controller="Home"
+   asp-action="Index"
+   aria-label="MediCare Home"
+   style="display:inline-flex;
+          align-items:center;
+          padding:6px 14px;
+          border-radius:14px;
+          background:#f0faf9;
+          border:1px solid #d5e9e6;
+          box-shadow:0 3px 12px rgba(0,80,85,0.08);
+          flex-shrink:0;">
 
-        <a class="btn btn-outline-secondary"
-   asp-controller="Account"
-   asp-action="ChangePassword">
-    Change Password
+    <img src="~/images/medicare-logo.png"
+         asp-append-version="true"
+         alt="MediCare Hospital Management System"
+         style="display:block;
+                width:210px;
+                height:auto;
+                max-height:70px;
+                object-fit:contain;" />
+
 </a>
 
-        <form asp-controller="Account"
-              asp-action="Logout"
-              method="post"
-              class="m-0">
 
-            @Html.AntiForgeryToken()
+                <!-- Main navigation remains hidden on all pages -->
+                @if (!hideMainNavigationLinks)
+                {
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#medicareNavbar"
+                            aria-controls="medicareNavbar"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
 
-            <button type="submit"
-                    class="btn btn-outline-danger">
-                Logout
-            </button>
-        </form>
-    }
-    else
-    {
-        <a class="btn btn-primary"
-           asp-controller="Account"
-           asp-action="Login">
-            Login
-        </a>
-    }
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-           </div>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"
+                         id="medicareNavbar">
+
+                        <ul class="navbar-nav flex-grow-1">
+
+                            <!-- Billing: Accountant -->
+                            @if (User.IsInRole("Accountant"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Billing"
+                                       asp-action="Index">
+                                        Billing
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Service Prices: Administrator -->
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="BillingCatalogue"
+                                       asp-action="Index">
+                                        Service Prices
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Wards & Beds -->
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Facilities"
+                                       asp-action="Index">
+                                        Wards &amp; Beds
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Inpatient & Outpatient -->
+                            @if (User.IsInRole("Receptionist") ||
+                                 User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Admissions"
+                                       asp-action="Index">
+                                        Inpatients
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Outpatients"
+                                       asp-action="Index">
+                                        Outpatients
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Medicines -->
+                            @if (User.IsInRole("Administrator") ||
+                                 User.IsInRole("Pharmacist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Medicines"
+                                       asp-action="Index">
+                                        Medicines
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Pharmacy -->
+                            @if (User.IsInRole("Pharmacist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Pharmacy"
+                                       asp-action="Index">
+                                        Pharmacy
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Laboratory -->
+                            @if (User.IsInRole("Doctor") ||
+                                 User.IsInRole("Laboratory Staff"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Laboratory"
+                                       asp-action="Index">
+                                        Laboratory
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Lab Catalogue -->
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="LabTests"
+                                       asp-action="Index">
+                                        Lab Catalogue
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Medical Records -->
+                            @if (User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="MedicalRecords"
+                                       asp-action="Index">
+                                        Medical Records
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Appointments -->
+                            @if (User.IsInRole("Administrator") ||
+                                 User.IsInRole("Receptionist") ||
+                                 User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Appointments"
+                                       asp-action="Index">
+                                        Appointments
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Doctors -->
+                            @if (User.IsInRole("Administrator") ||
+                                 User.IsInRole("Doctor") ||
+                                 User.IsInRole("Receptionist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Doctors"
+                                       asp-action="Index">
+                                        Doctors
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Departments -->
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Departments"
+                                       asp-action="Index">
+                                        Departments
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Home -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    Home
+                                </a>
+                            </li>
+
+                            <!-- Privacy -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-area=""
+                                   asp-controller="Home"
+                                   asp-action="Privacy">
+                                    Privacy
+                                </a>
+                            </li>
+
+                            <!-- Patient Registration -->
+                            @if (User.IsInRole("Administrator") ||
+                                 User.IsInRole("Receptionist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Patients"
+                                       asp-action="Create">
+                                        Register Patient
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Patient Directory -->
+                            @if (User.IsInRole("Administrator") ||
+                                 User.IsInRole("Receptionist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Patients"
+                                       asp-action="Index">
+                                        Patients
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Administrator Management -->
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <!-- Staff Accounts -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="StaffAccounts"
+                                       asp-action="Index">
+                                        Staff Accounts
+                                    </a>
+                                </li>
+
+                                <!-- Employees -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Employees"
+                                       asp-action="Index">
+                                        Employees
+                                    </a>
+                                </li>
+
+                                <!-- Attendance -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Attendances"
+                                       asp-action="Index">
+                                        Attendance
+                                    </a>
+                                </li>
+
+                                <!-- Security Audit Logs -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="SecurityAuditLogs"
+                                       asp-action="Index">
+                                        Security Audit Logs
+                                    </a>
+                                </li>
+
+                                <!-- Leave -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="LeaveRequests"
+                                       asp-action="Index">
+                                        Leave
+                                    </a>
+                                </li>
+
+                                <!-- Reports -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Reports"
+                                       asp-action="Index">
+                                        Reports
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+
+                    </div>
+                }
+
+                <!-- Account buttons shown on non-login pages -->
+                <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- Dashboard Button -->
+    <a asp-controller="Dashboard"
+       asp-action="Index"
+       class="btn mc-nav-pill mc-nav-dashboard">
+
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+
+        <span>Dashboard</span>
+    </a>
+
+    <!-- Change Password Button -->
+    <a asp-controller="Account"
+       asp-action="ChangePassword"
+       class="btn mc-nav-pill mc-nav-password">
+
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="10"
+                  width="16" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+            <circle cx="12" cy="15" r="1"/>
+        </svg>
+
+        <span>Change Password</span>
+    </a>
+
+    <!-- Logout Button -->
+    <form asp-controller="Account"
+          asp-action="Logout"
+          method="post"
+          class="m-0">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit"
+                class="btn mc-nav-pill mc-nav-logout">
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <path d="M16 17l5-5-5-5"/>
+                <path d="M21 12H9"/>
+            </svg>
+
+            <span>Logout</span>
+        </button>
+
+    </form>
+}
+else if (!isLoginPage)
+{
+    <a class="btn mc-nav-pill mc-nav-dashboard"
+       asp-controller="Account"
+       asp-action="Login">
+
+        <span>Login</span>
+    </a>
+}
+
+                </div>
+
+            </div>
+
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    }
 
-    <footer class="border-top footer text-muted">
+    <div class="@(isLoginPage ? "container-fluid px-0" : "container")">
+    <main role="main" class="pb-3">
+
+        @{
+            var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+            var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+            var hideHero =
+                (string.Equals(controller, "Dashboard", StringComparison.OrdinalIgnoreCase) &&
+                 string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase))
+                ||
+                (string.Equals(controller, "Account", StringComparison.OrdinalIgnoreCase) &&
+                 string.Equals(action, "Login", StringComparison.OrdinalIgnoreCase));
+        }
+
+        @if (User.Identity?.IsAuthenticated == true && !hideHero)
+        {
+            <partial name="_PageHero" />
+        }
+
+        @RenderBody()
+    </main>
+</div>
+
+    <!-- Footer -->
+    
+<footer class="border-top text-muted @(isLoginPage ? "footer" : "mc-site-footer")">
+
         <div class="container">
-            &copy; 2026 - MediCare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - MediCare -
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Privacy">
+                Privacy
+            </a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

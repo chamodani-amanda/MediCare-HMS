@@ -1,0 +1,335 @@
+
+@model MediCare.Web.ViewModels.PharmacyReportViewModel
+
+@{
+    ViewData["Title"] = "Pharmacy Report";
+
+    var filters = new[]
+    {
+        new { Value = "All", Label = "All Medicines" },
+        new { Value = "Active", Label = "Active" },
+        new { Value = "Inactive", Label = "Inactive" },
+        new { Value = "LowStock", Label = "Low Stock" },
+        new { Value = "ExpiringSoon", Label = "Expiring Soon" },
+        new { Value = "ExpiredStock", Label = "Expired Stock" }
+    };
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+            <h1 class="fw-bold">Pharmacy Report</h1>
+
+            <p class="text-muted">
+                Medicine inventory and dispensing overview.
+                Stock assessed on @Model.AsOfDate.ToString("yyyy-MM-dd")
+                (Sri Lanka).
+            </p>
+        </div>
+
+        <a asp-controller="Reports"
+           asp-action="Index"
+           class="btn btn-outline-secondary d-print-none">
+            Back to Reports
+        </a>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4 col-lg">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Medicines</p>
+                    <h3>@Model.TotalMedicines</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Active</p>
+                    <h3>@Model.ActiveMedicines</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Low Stock</p>
+                    <h3>@Model.LowStockMedicines</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Expiring Soon</p>
+                    <h3>@Model.ExpiringSoonMedicines</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Expired Stock</p>
+                    <h3>@Model.ExpiredStockMedicines</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold">Dispensing Activity</h5>
+
+            <p class="mb-1">
+                Total dispensing records:
+                <strong>@Model.DispenseRecords</strong>
+            </p>
+
+            <p class="mb-0">
+                Reversal entries:
+                <strong>@Model.ReversalRecords</strong>
+            </p>
+
+            <p class="text-muted small mt-2 mb-0">
+                Counts are all-time records, including reversal
+                entries. They are not net dispensed quantities.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4 d-print-none">
+        <div class="card-body p-4">
+
+            <form asp-controller="Reports"
+                  asp-action="PharmacyReport"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-6">
+                    <label class="form-label">Search Medicine</label>
+
+                    <input type="search"
+                           name="search"
+                           value="@Model.Search"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Medicine code, name or generic name" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Stock Filter</label>
+
+                    <select name="stockFilter"
+                            class="form-select">
+                        @foreach (var filter in filters)
+                        {
+                            <option value="@filter.Value"
+                                    selected="@(Model.StockFilter == filter.Value)">
+                                @filter.Label
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="PharmacyReport"
+                       class="btn btn-outline-secondary">
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Medicine Inventory
+                    (@Model.MatchingMedicines)
+                </h5>
+
+                <div class="d-flex gap-2 d-print-none">
+
+                    <a asp-controller="Reports"
+                       asp-action="ExportPharmacyCsv"
+                       asp-route-search="@Model.Search"
+                       asp-route-stockFilter="@Model.StockFilter"
+                       class="btn btn-outline-success">
+                        Export CSV
+                    </a>
+
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-outline-primary">
+                        Print
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Medicine</th>
+                            <th>Strength / Form</th>
+                            <th>Usable Stock</th>
+                            <th>Expired Stock</th>
+                            <th>Low Stock Level</th>
+                            <th>Expiring Batches</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var medicine in Model.Medicines)
+                        {
+                            <tr>
+                                <td>@medicine.Code</td>
+
+                                <td>
+                                    <strong>@medicine.Name</strong>
+                                    <div class="text-muted small">
+                                        @medicine.GenericName
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @medicine.Strength
+                                    <div class="text-muted small">
+                                        @medicine.Formulation
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @medicine.UsableQuantity
+                                    @medicine.DispensingUnit
+                                </td>
+
+                                <td>
+                                    @medicine.ExpiredQuantity
+                                    @medicine.DispensingUnit
+                                </td>
+
+                                <td>
+                                    @medicine.LowStockThreshold
+                                    @medicine.DispensingUnit
+                                </td>
+
+                                <td>@medicine.ExpiringSoonBatches</td>
+
+                                <td>
+                                    @if (!medicine.IsActive)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Inactive
+                                        </span>
+                                    }
+                                    else if (medicine.UsableQuantity <=
+                                             medicine.LowStockThreshold)
+                                    {
+                                        <span class="badge bg-danger">
+                                            Low Stock
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.Medicines.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8"
+                                    class="text-center text-muted py-4">
+                                    No matching medicines found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3 d-print-none">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="PharmacyReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-stockFilter="@Model.StockFilter"
+                               asp-route-page="@(Model.Page - 1)"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="PharmacyReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-stockFilter="@Model.StockFilter"
+                               asp-route-page="@(Model.Page + 1)"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Usable stock excludes expired batches.
+        Expiring Soon means batches expiring within 30 days.
+        Summary medicine counts follow the search filter.
+        CSV exports all matching medicines, up to 10,000.
+        Printing displays the current page.
+    </p>
+
+</div>

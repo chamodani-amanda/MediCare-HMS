@@ -1,0 +1,11 @@
+@model MediCare.Web.ViewModels.BillingPage<MediCare.Web.Models.BillingService>
+@{ViewData["Title"]="Service catalogue";}
+<h1>Service catalogue</h1><p>Explicit LKR prices only. Changes do not alter existing charges.</p>
+<a class="btn btn-primary mb-3" asp-action="Edit">New service</a>
+<form method="get" class="d-flex gap-2 mb-3"><input class="form-control" name="search" value="@Model.Search" placeholder="Code, name or category" aria-label="Search services"/><button class="btn btn-outline-primary">Search</button></form>
+<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Code</th><th>Service</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+@foreach(var s in Model.Items){<tr><td>@s.Code</td><td>@s.Name</td><td>@s.Category</td><td>@(s.IsActive?"Active":"Inactive")</td><td><a asp-action="Edit" asp-route-id="@s.Id">Edit</a> · <a asp-action="Prices" asp-route-id="@s.Id">Price history</a></td></tr>}
+</tbody></table></div>
+<p>Page @Model.Page of @Math.Max(1,Model.TotalPages)</p>
+@if(Model.Page>1){<a class="btn btn-outline-secondary" asp-route-search="@Model.Search" asp-route-page="@(Model.Page-1)">Previous</a>}
+@if(Model.Page<Model.TotalPages){<a class="btn btn-outline-secondary" asp-route-search="@Model.Search" asp-route-page="@(Model.Page+1)">Next</a>}

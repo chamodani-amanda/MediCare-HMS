@@ -1,0 +1,9 @@
+@model MediCare.Web.ViewModels.BillingServiceForm
+@{ViewData["Title"]="Service details";}
+<h1>Service details</h1>
+<form method="post" class="col-lg-7"><div asp-validation-summary="All" class="text-danger"></div><input asp-for="Id" type="hidden"/><input asp-for="Version" type="hidden"/>
+<div class="mb-3"><label asp-for="Code" class="form-label"></label><input asp-for="Code" class="form-control" readonly="@(Model.Id!=Guid.Empty)"/></div>
+<div class="mb-3"><label asp-for="Name" class="form-label"></label><input asp-for="Name" class="form-control"/></div>
+<div class="mb-3"><label asp-for="Category" class="form-label"></label><input asp-for="Category" class="form-control" list="categories"/><datalist id="categories"><option>Consultation</option><option>Laboratory</option><option>Pharmacy</option><option>Inpatient</option><option>Outpatient</option><option>Other</option></datalist></div>
+<div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
+<div class="form-check mb-3"><input asp-for="IsActive" class="form-check-input"/><label asp-for="IsActive" class="form-check-label">Active</label></div><button class="btn btn-primary">Save service</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></form>

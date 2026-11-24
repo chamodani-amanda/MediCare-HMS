@@ -1,0 +1,2 @@
+@model (int Page, int Pages, int Total, string? Search, string? Filter)
+<p>@Model.Total results · Page @Model.Page of @Model.Pages</p>@if(Model.Page>1){<a asp-route-page="@(Model.Page-1)" asp-route-search="@Model.Search" asp-route-filter="@Model.Filter" class="btn btn-outline-secondary">Previous</a>} @if(Model.Page<Model.Pages){<a asp-route-page="@(Model.Page+1)" asp-route-search="@Model.Search" asp-route-filter="@Model.Filter" class="btn btn-outline-secondary">Next</a>}

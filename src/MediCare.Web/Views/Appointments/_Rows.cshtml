@@ -1,0 +1,13 @@
+@model List<MediCare.Web.ViewModels.AppointmentRowViewModel>
+@using MediCare.Web.Services
+<div class="table-responsive"><table class="table table-hover align-middle">
+    <thead><tr><th>Patient</th><th>Doctor</th><th>Date / time (Sri Lanka)</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    @foreach (var appointment in Model)
+    {
+        <tr><td>@appointment.PatientName <span class="text-muted d-block small">@appointment.PatientNumber</span></td>
+            <td>Dr. @appointment.DoctorName</td><td>@HospitalTime.Local(appointment.StartAtUtc).ToString("yyyy-MM-dd HH:mm") – @HospitalTime.Local(appointment.EndAtUtc).ToString("HH:mm")</td>
+            <td>@appointment.DurationMinutes min</td><td><span class="badge @(appointment.Status == MediCare.Web.Models.AppointmentStatus.Cancelled ? "bg-secondary" : "bg-primary")">@appointment.Status</span></td>
+            <td><a asp-controller="Appointments" asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-sm btn-outline-primary">Details</a></td></tr>
+    }
+    @if (Model.Count == 0) { <tr><td colspan="6" class="text-muted">No appointments found.</td></tr> }
+    </tbody></table></div>

@@ -1,0 +1,20 @@
+@model MediCare.Web.ViewModels.AppointmentAvailabilityViewModel
+@{ ViewData["Title"] = "Doctor Availability"; }
+<div class="py-4"><div class="d-flex justify-content-between flex-wrap gap-3 mb-4"><h1 class="fw-bold">Doctor Availability</h1><a asp-action="Index" class="btn btn-outline-secondary">Back to Appointments</a></div>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4">
+        <form asp-action="Availability" method="get" class="row g-3 mb-4 align-items-end">
+            <div class="col-md-5"><label asp-for="DoctorId" class="form-label">Doctor</label><select asp-for="DoctorId" asp-items="Model.Doctors" class="form-select"><option value="">Select doctor</option></select></div>
+            <div class="col-md-3"><label asp-for="Date" class="form-label"></label><input asp-for="Date" type="date" class="form-control" /></div>
+            <div class="col-md-2"><label asp-for="DurationMinutes" class="form-label"></label><select asp-for="DurationMinutes" class="form-select">@foreach (var duration in new[] {15,30,45,60}) { <option value="@duration">@duration minutes</option> }</select></div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary">Find Times</button></div>
+        </form>
+        <p class="text-muted">Future starts in Sri Lanka time (Asia/Colombo). Times can change while other staff book appointments.</p>
+        @if (Model.DoctorId != Guid.Empty)
+        {
+            <h2 class="h5">Dr. @Model.DoctorName · @Model.Date?.ToString("yyyy-MM-dd")</h2>
+            <div class="d-flex flex-wrap gap-2 mt-3">@foreach (var start in Model.AvailableStarts)
+            { <a asp-action="Create" asp-route-doctorId="@Model.DoctorId" asp-route-date="@Model.Date?.ToString("yyyy-MM-dd")" asp-route-startTime="@start.ToString("HH:mm")" asp-route-durationMinutes="@Model.DurationMinutes" class="btn btn-outline-primary">@start.ToString("HH:mm")</a> }</div>
+            @if (Model.AvailableStarts.Count == 0) { <div class="alert alert-info">No working-hour slots are currently available for this date and duration.</div> }
+        }
+    </div></div>
+</div>

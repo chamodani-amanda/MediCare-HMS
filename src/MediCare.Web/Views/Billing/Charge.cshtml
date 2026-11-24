@@ -1,0 +1,13 @@
+@model MediCare.Web.ViewModels.ChargeForm
+@using MediCare.Web.Services
+@{ViewData["Title"]="New patient charge";}
+<h1>New patient charge</h1><p>Manually record configured services only. Source links are administrative references; no clinical service is charged automatically.</p>
+<form method="get" class="d-flex gap-2 mb-3"><input name="search" placeholder="Search patients by name or number" aria-label="Patient search" class="form-control"/><button class="btn btn-outline-primary">Find patients</button></form>
+<form method="get" class="d-flex gap-2 mb-4"><select name="patientId" class="form-select" aria-label="Select patient to load sources"><option value="">Choose patient</option>@foreach(var p in Model.Patients){<option value="@p.Id" selected="@(p.Id==Model.PatientId)">@p.Label</option>}</select><button class="btn btn-outline-primary">Load patient</button></form>
+<form method="post" class="col-lg-8"><div asp-validation-summary="All" class="text-danger"></div><input asp-for="Token" type="hidden"/><input asp-for="PatientId" type="hidden"/>
+<p>Patient: @Model.Patients.FirstOrDefault(p=>p.Id==Model.PatientId)?.Label</p>
+<div class="mb-3"><label asp-for="ServiceId" class="form-label">Service</label><select asp-for="ServiceId" class="form-select"><option value="">Select configured service</option>@foreach(var s in Model.Services){<option value="@s.Id">@s.Label — LKR @s.UnitPrice?.ToString("N2")</option>}</select><small>The configured price effective when submitted is used.</small></div>
+<div class="mb-3"><label asp-for="Quantity" class="form-label"></label><input asp-for="Quantity" type="number" min="0.001" max="999999" step="0.001" class="form-control"/></div>
+<div class="mb-3"><label asp-for="SourceKind" class="form-label">Optional source type</label><select asp-for="SourceKind" class="form-select"><option value="">Manual charge without source</option>@foreach(var kind in new[]{"Appointment","Laboratory","Pharmacy","Admission","Outpatient"}){<option>@kind</option>}</select></div>
+<div class="mb-3"><label asp-for="SourceId" class="form-label">Optional source reference</label><select asp-for="SourceId" class="form-select"><option value="">No source</option>@foreach(var s in Model.Sources){<option value="@s.Id">@s.Label — @HospitalTime.Local(s.OccurredAtUtc).ToString("yyyy-MM-dd HH:mm")</option>}</select><small class="text-muted">Latest 100 references per module, Asia/Colombo. Choose the matching source type.</small></div>
+<button class="btn btn-primary">Record charge</button> <a asp-action="Charges" class="btn btn-outline-secondary">Cancel</a></form>

@@ -2,103 +2,747 @@
 
 @{
     ViewData["Title"] = "Login";
+    ViewData["IsLoginPage"] = true;
 }
 
-<div class="row justify-content-center align-items-center py-5">
-    <div class="col-lg-10">
+<style>
+    body.mc-login-layout {
+        min-height: 100vh;
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        background: #eaf4f8;
+        overflow: hidden;
+    }
 
-        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-            <div class="row g-0">
+    .mc-login-layout > .container-fluid {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+        position: relative;
+        overflow: hidden;
+    }
 
-                <div class="col-lg-6 medicare-login-brand p-5">
-                    <div class="mb-5">
-                        <h2 class="fw-bold">MediCare</h2>
-                        <p class="opacity-75">
-                            Smart Healthcare. Seamless Management.
-                        </p>
-                    </div>
+    .mc-login-layout main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 24px 10px 24px !important;
+        position: relative;
+        min-height: calc(100vh - 60px);
+    }
 
-                    <h1 class="fw-bold display-6">
-                        Better care begins with better management.
-                    </h1>
+    .mc-login-page-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(rgba(235,248,252,0.55), rgba(235,248,252,0.55)),
+            url('/images/medicare-login-bg.webp');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(7px);
+        transform: scale(1.05);
+        z-index: 0;
+    }
 
-                    <p class="mt-4 opacity-75">
-                        One connected workspace for hospital teams,
-                        patient services and healthcare operations.
+    .mc-login-stage {
+        position: relative;
+        z-index: 1;
+        width: min(1240px, 96vw);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mc-login-card {
+        width: 100%;
+        min-height: min(720px, 84vh);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: rgba(255,255,255,0.97);
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 24px 70px rgba(16, 52, 76, 0.18);
+        border: 1px solid rgba(255,255,255,0.85);
+    }
+
+    .mc-login-branding {
+        background: linear-gradient(145deg, #edf9fb 0%, #d8f2f1 100%);
+        padding: 48px 42px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-right: 1px solid #d5ebed;
+    }
+
+    .mc-login-logo {
+        width: min(400px, 100%);
+        max-height: 170px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 20px auto;
+        filter: drop-shadow(0 8px 18px rgba(0,0,0,0.08));
+    }
+
+    .mc-brand-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: #0d8a8a;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        margin-bottom: 48px;
+        flex-wrap: wrap;
+    }
+
+    .mc-brand-label::before,
+    .mc-brand-label::after {
+        content: "";
+        width: 36px;
+        height: 2px;
+        background: #38b7b4;
+        display: inline-block;
+    }
+
+    .mc-brand-description {
+        max-width: 440px;
+        color: #244f68;
+        font-size: 20px;
+        line-height: 1.8;
+        font-weight: 500;
+        margin-bottom: 50px;
+    }
+
+    .mc-login-features {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 520px;
+    }
+
+    .mc-feature {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .mc-feature-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+        display: grid;
+        place-items: center;
+        background: #c9f4f1;
+        color: #0b918c;
+        box-shadow: 0 6px 15px rgba(0, 128, 128, 0.08);
+    }
+
+    .mc-feature-icon svg {
+        width: 34px;
+        height: 34px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mc-feature-title {
+        margin: 0;
+        color: #224861;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .mc-login-panel {
+        padding: 52px 42px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: rgba(255,255,255,0.98);
+    }
+
+    .mc-login-welcome {
+        color: #143c5a;
+        font-size: clamp(40px, 4vw, 58px);
+        font-weight: 850;
+        line-height: 1.1;
+        margin-bottom: 16px;
+    }
+
+    .mc-login-subtitle {
+        color: #5b7488;
+        font-size: 18px;
+        line-height: 1.7;
+        margin-bottom: 26px;
+        max-width: 520px;
+    }
+
+    .mc-login-form .form-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #173f5d;
+        font-size: 17px;
+        font-weight: 750;
+        margin-bottom: 10px;
+    }
+
+    .mc-login-form .form-label svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mc-login-form .form-control {
+        min-height: 58px;
+        border-radius: 16px;
+        border: 1px solid #d2dee8;
+        background: #f1f7fe;
+        font-size: 17px;
+        color: #1d3d55;
+        padding: 14px 18px;
+        transition: all 0.2s ease;
+    }
+
+    .mc-login-form .form-control:focus {
+        background: #fff;
+        border-color: #11a9a1;
+        box-shadow: 0 0 0 4px rgba(17,169,161,0.12);
+    }
+
+    .mc-input-group {
+        margin-bottom: 22px;
+    }
+
+    .mc-signin-btn.btn {
+        width: 100%;
+        min-height: 60px;
+        border: none;
+        border-radius: 16px;
+        background: linear-gradient(120deg, #16b9b2, #08828b);
+        color: #fff;
+        font-size: 21px;
+        font-weight: 800;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 12px 24px rgba(7,137,143,0.18);
+        transition: all 0.25s ease;
+        margin-top: 10px;
+    }
+
+    .mc-signin-btn.btn:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        filter: brightness(1.04);
+        box-shadow: 0 16px 28px rgba(7,137,143,0.28);
+    }
+
+    .mc-signin-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mc-login-security {
+        margin-top: 18px;
+        text-align: center;
+        color: #7a8d9d;
+        font-size: 15px;
+    }
+
+    .mc-login-layout .footer {
+        flex-shrink: 0;
+        position: static !important;
+        width: 100%;
+        background: #f7fbfd;
+        border-top: 1px solid #dbe8f0;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
+        color: #657789;
+    }
+
+    .mc-login-layout .footer a {
+        color: #078b86;
+        font-weight: 700;
+    }
+
+    @@media (max-width: 1100px) {
+        .mc-login-card {
+            min-height: auto;
+            grid-template-columns: 1fr;
+        }
+
+        .mc-login-branding,
+        .mc-login-panel {
+            padding: 34px 28px;
+        }
+
+        .mc-login-logo {
+            width: min(320px, 100%);
+            max-height: 140px;
+        }
+
+        .mc-login-features {
+            max-width: 100%;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        body.mc-login-layout {
+            overflow: auto;
+        }
+
+        .mc-login-layout main {
+            padding: 16px 12px !important;
+            min-height: auto;
+        }
+
+        .mc-login-stage {
+            width: 100%;
+        }
+
+        .mc-login-card {
+            border-radius: 20px;
+        }
+
+        .mc-login-welcome {
+            font-size: 36px;
+        }
+
+        .mc-brand-description {
+            font-size: 17px;
+        }
+
+        .mc-login-features {
+            grid-template-columns: 1fr;
+        }
+    }
+
+/* ========================================
+   FINAL MEDICARE LOGIN LAYOUT FIX
+   ======================================== */
+
+/* Login page fits the available screen */
+body.mc-login-layout {
+    min-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+
+/* Background area */
+body.mc-login-layout > .container-fluid {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 0 !important;
+}
+
+/* Ensure no excessive minimum height */
+body.mc-login-layout main {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 18px !important;
+}
+
+/* ========================================
+   CLEAR HOSPITAL BACKGROUND
+   ======================================== */
+
+/* Remove blur from existing background */
+body.mc-login-layout .mc-login-page-bg {
+    filter: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+
+    background:
+        linear-gradient(
+            rgba(230, 246, 252, 0.12),
+            rgba(230, 246, 252, 0.12)
+        ),
+        url('/images/medicare-login-bg.webp')
+        center center / cover no-repeat !important;
+}
+
+/* Also handle earlier background styling */
+body.mc-login-layout > .container-fluid::before {
+    filter: none !important;
+    transform: none !important;
+}
+
+body.mc-login-layout > .container-fluid::after {
+    background: rgba(235, 247, 251, 0.10) !important;
+}
+
+/* ========================================
+   SMALLER LOGIN BOX
+   ======================================== */
+
+body.mc-login-layout .mc-login-stage {
+    width: min(1050px, 94vw) !important;
+    max-width: 1050px !important;
+
+    margin: auto !important;
+    padding: 8px 0 !important;
+}
+
+body.mc-login-layout .mc-login-card {
+    width: 100% !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+
+    grid-template-columns: 1fr 1fr;
+
+    border-radius: 22px;
+}
+
+/* Left and right card spacing */
+body.mc-login-layout .mc-login-branding,
+body.mc-login-layout .mc-login-panel {
+    padding: 25px 32px !important;
+}
+
+/* Left panel */
+body.mc-login-layout .mc-login-branding {
+    gap: 16px !important;
+}
+
+/* MediCare logo remains highlighted */
+body.mc-login-layout .mc-login-logo {
+    width: min(290px, 100%) !important;
+    max-height: 105px !important;
+    height: auto !important;
+}
+
+/* Remove excessive vertical gaps */
+body.mc-login-layout .mc-brand-label {
+    margin-top: 8px !important;
+    margin-bottom: 16px !important;
+}
+
+body.mc-login-layout .mc-brand-description {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 14px !important;
+}
+
+body.mc-login-layout .mc-login-features {
+    gap: 12px !important;
+}
+
+body.mc-login-layout .mc-feature-icon {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 14px;
+}
+
+body.mc-login-layout .mc-feature-icon svg {
+    width: 25px !important;
+    height: 25px !important;
+}
+
+/* Right panel */
+body.mc-login-layout .mc-login-welcome {
+    font-size: clamp(30px, 3vw, 40px) !important;
+    margin-bottom: 8px !important;
+}
+
+body.mc-login-layout .mc-login-subtitle {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+}
+
+body.mc-login-layout .mc-input-group {
+    margin-bottom: 13px !important;
+}
+
+body.mc-login-layout .mc-login-form .form-control {
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+}
+
+body.mc-login-layout .mc-signin-btn.btn {
+    min-height: 49px !important;
+    font-size: 17px !important;
+    margin-top: 5px !important;
+}
+
+body.mc-login-layout .mc-login-security {
+    margin-top: 10px !important;
+    margin-bottom: 0 !important;
+}
+
+/* ========================================
+   FOOTER VISIBLE AT BOTTOM
+   ======================================== */
+
+body.mc-login-layout > footer.footer {
+    position: static !important;
+    flex-shrink: 0 !important;
+
+    height: auto !important;
+    min-height: 40px !important;
+
+    margin: 0 !important;
+    padding: 9px 0 !important;
+
+    line-height: 1.4 !important;
+    text-align: center;
+    background: #f6f9fc;
+}
+
+/* ========================================
+   SMALL SCREENS
+   ======================================== */
+
+@@media (max-width: 900px) {
+
+    body.mc-login-layout .mc-login-card {
+        grid-template-columns: 1fr;
+    }
+
+    body.mc-login-layout .mc-login-stage {
+        width: min(650px, 96vw) !important;
+    }
+
+    body.mc-login-layout .mc-login-branding,
+    body.mc-login-layout .mc-login-panel {
+        padding: 22px !important;
+    }
+
+    body.mc-login-layout main {
+        padding: 12px !important;
+    }
+}
+</style>
+
+<div class="mc-login-page-bg"></div>
+
+<div class="mc-login-stage">
+    <div class="mc-login-card">
+
+        <section class="mc-login-branding">
+            <div>
+                <img src="~/images/medicare-logo.png"
+                     asp-append-version="true"
+                     alt="MediCare Hospital Management System"
+                     class="mc-login-logo" />
+
+                <div class="mc-brand-label">
+                    HOSPITAL MANAGEMENT SYSTEM
+                </div>
+            </div>
+
+            <p class="mc-brand-description">
+                A connected workspace for managing hospital
+                operations efficiently.
+            </p>
+
+            <div class="mc-login-features">
+
+                <div class="mc-feature">
+                    <span class="mc-feature-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="9" cy="8" r="3"/>
+                            <path d="M3 20v-2a6 6 0 0 1 12 0v2"/>
+                            <path d="M17 5a3 3 0 0 1 0 6"/>
+                            <path d="M18 15a5 5 0 0 1 3 5"/>
+                        </svg>
+                    </span>
+                    <p class="mc-feature-title">
+                        Patient<br />Management
                     </p>
-
-                    <div class="mt-5">
-                        <span class="badge rounded-pill text-bg-light">
-                            Secure Staff Portal
-                        </span>
-                    </div>
                 </div>
 
-                <div class="col-lg-6 bg-white p-5">
-
-                    <h3 class="fw-bold mb-2">Welcome Back</h3>
-
-                    <p class="text-muted mb-4">
-                        Sign in to your MediCare account.
+                <div class="mc-feature">
+                    <span class="mc-feature-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="6" r="3"/>
+                            <path d="M6 21v-5a6 6 0 0 1 12 0v5"/>
+                            <path d="M8 12v3a4 4 0 0 0 8 0v-3"/>
+                        </svg>
+                    </span>
+                    <p class="mc-feature-title">
+                        Doctor<br />Management
                     </p>
+                </div>
 
-                    <form asp-controller="Account"
-                          asp-action="Login"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
-
-                        <input asp-for="ReturnUrl" type="hidden" />
-
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger mb-3"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email"
-                                   class="form-label fw-semibold">
-                                Email Address
-                            </label>
-
-                            <input asp-for="Email"
-                                   class="form-control form-control-lg"
-                                   placeholder="Enter your email"
-                                   autocomplete="username" />
-
-                            <span asp-validation-for="Email"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Password"
-                                   class="form-label fw-semibold">
-                                Password
-                            </label>
-
-                            <input asp-for="Password"
-                                   class="form-control form-control-lg"
-                                   placeholder="Enter your password"
-                                   autocomplete="current-password" />
-
-                            <span asp-validation-for="Password"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary btn-lg w-100">
-                            Sign In
-                        </button>
-
-                        <p class="text-center text-muted small mt-4">
-                            Authorized hospital personnel only.
-                        </p>
-                    </form>
+                <div class="mc-feature">
+                    <span class="mc-feature-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 21V7l9-4 9 4v14"/>
+                            <path d="M3 21h18M9 21v-6h6v6"/>
+                            <path d="M12 7v5M9.5 9.5h5"/>
+                        </svg>
+                    </span>
+                    <p class="mc-feature-title">
+                        Hospital<br />Operations
+                    </p>
                 </div>
 
             </div>
-        </div>
+        </section>
+
+        <section class="mc-login-panel">
+
+            <h1 class="mc-login-welcome">
+                Welcome Back
+            </h1>
+
+            <p class="mc-login-subtitle">
+                Sign in to your MediCare account to access the
+                hospital management system.
+            </p>
+
+<form asp-controller="Account"
+      asp-action="Login"
+      method="post"
+      autocomplete="off"
+      class="mc-login-form">
+
+
+                @Html.AntiForgeryToken()
+
+                <input asp-for="ReturnUrl" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mc-input-group">
+                    <label asp-for="Email" class="form-label">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/>
+                            <path d="m3 7 9 6 9-6"/>
+                        </svg>
+                        Email Address
+                    </label>
+
+                    
+<input asp-for="Email"
+       type="email"
+       class="form-control"
+       placeholder="Enter your email address"
+       autocomplete="off" />
+
+
+                    <span asp-validation-for="Email"
+                          class="text-danger small"></span>
+                </div>
+
+                <div class="mc-input-group">
+                    <label asp-for="Password" class="form-label">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="4" y="10" width="16" height="11" rx="2"/>
+                            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                        </svg>
+                        Password
+                    </label>
+
+                    
+<input asp-for="Password"
+       type="password"
+       class="form-control"
+       placeholder="Enter your password"
+       autocomplete="off" />
+
+
+                    <span asp-validation-for="Password"
+                          class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn mc-signin-btn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M10 17l5-5-5-5"/>
+                        <path d="M15 12H3"/>
+                        <path d="M12 3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-6"/>
+                    </svg>
+                    <span>Sign In</span>
+                </button>
+
+                <p class="mc-login-security">
+                    Authorized hospital personnel only.
+                </p>
+
+            </form>
+        </section>
+
     </div>
 </div>
 
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const email = document.getElementById("Email");
+            const password = document.getElementById("Password");
+
+            if (!email || !password) return;
+
+            let userStartedTyping = false;
+
+            function clearLoginFields() {
+                if (userStartedTyping) return;
+
+                email.value = "";
+                password.value = "";
+            }
+
+            [email, password].forEach(field => {
+                field.addEventListener("input", event => {
+                    if (event.isTrusted) {
+                        userStartedTyping = true;
+                    }
+                });
+            });
+
+            window.addEventListener("pageshow", () => {
+                clearLoginFields();
+
+                // Some browsers fill saved credentials
+                // shortly after displaying the page.
+                setTimeout(clearLoginFields, 150);
+                setTimeout(clearLoginFields, 600);
+                setTimeout(clearLoginFields, 1200);
+            });
+        })();
+    </script>
 }

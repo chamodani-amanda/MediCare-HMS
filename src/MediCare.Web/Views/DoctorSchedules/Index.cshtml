@@ -1,0 +1,15 @@
+@model MediCare.Web.ViewModels.DoctorProfileViewModel
+@{ ViewData["Title"] = "Doctor Working Schedules"; }
+<div class="py-4">
+    <h1 class="fw-bold">Doctor Working Schedules</h1><p>Dr. @Model.Doctor.FirstName @Model.Doctor.LastName · @Model.Doctor.RegistrationNumber</p>
+    <p class="text-muted">Recurring weekly hours in Sri Lanka time (Asia/Colombo). Adjacent shifts are allowed; overlapping active shifts are rejected.</p>
+    <div class="d-flex gap-2 mb-4"><a asp-controller="Doctors" asp-action="Details" asp-route-id="@Model.Doctor.Id" class="btn btn-outline-secondary">Back to Profile</a>
+    @if (Model.Doctor.IsActive) { <a asp-action="Create" asp-route-doctorId="@Model.Doctor.Id" class="btn btn-primary">Add Working Schedule</a> }</div>
+    @if (!Model.Doctor.IsActive) { <div class="alert alert-warning">Reactivate this doctor before adding active availability.</div> }
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4 table-responsive">
+    <table class="table"><thead><tr><th>Day</th><th>From</th><th>Until</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    @foreach (var schedule in Model.Schedules)
+    { <tr><td>@schedule.DayOfWeek</td><td>@schedule.StartTime.ToString("HH:mm")</td><td>@schedule.EndTime.ToString("HH:mm")</td><td>@(schedule.IsActive ? "Active" : "Inactive")</td><td><a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-sm btn-outline-primary">Edit</a></td></tr> }
+    @if (Model.Schedules.Count == 0) { <tr><td colspan="5">No schedules registered.</td></tr> }
+    </tbody></table></div></div>
+</div>

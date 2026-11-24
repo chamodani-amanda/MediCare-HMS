@@ -1,0 +1,15 @@
+
+.git
+.vs
+.vscode
+artifacts
+backups
+**/bin
+**/obj
+**/node_modules
+**/.env
+**/.env.*
+**/appsettings.Development.json
+**/*.backup
+**/*.dump
+**/secrets.json

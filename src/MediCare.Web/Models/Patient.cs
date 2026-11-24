@@ -4,6 +4,7 @@ namespace MediCare.Web.Models;
 
 public class Patient
 {
+    public Guid Version { get; set; } = Guid.NewGuid();
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]

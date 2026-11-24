@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Hospital Reports";
+
+    var reports = new[]
+    {
+        new { Name = "Patient Report",
+              Description = "Patient registration and status summary." },
+
+        new { Name = "Appointment Report",
+              Description = "Appointment bookings and status summary." },
+
+        new { Name = "Laboratory Report",
+              Description = "Laboratory requests and results summary." },
+
+        new { Name = "Pharmacy Report",
+              Description = "Medicine inventory and dispensing summary." },
+
+        new { Name = "Billing Report",
+              Description = "Invoices, payments and outstanding balances." },
+
+        new { Name = "Staff Report",
+              Description = "Employee attendance and leave summary." }
+    };
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="fw-bold">Hospital Reports</h1>
+
+        <p class="text-muted">
+            View hospital operational and management reports.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        @foreach (var report in reports)
+        {
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold">
+                            @report.Name
+                        </h5>
+
+                        <p class="text-muted">
+                            @report.Description
+                        </p>
+
+                       
+@if (report.Name == "Patient Report")
+{
+    <a asp-controller="Reports"
+       asp-action="PatientReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+else if (report.Name == "Appointment Report")
+{
+    <a asp-controller="Reports"
+       asp-action="AppointmentReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+
+else if (report.Name == "Laboratory Report")
+{
+    <a asp-controller="Reports"
+       asp-action="LaboratoryReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+
+else if (report.Name == "Pharmacy Report")
+{
+    <a asp-controller="Reports"
+       asp-action="PharmacyReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+else if (report.Name == "Billing Report")
+{
+    <a asp-controller="Reports"
+       asp-action="BillingReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+
+else if (report.Name == "Staff Report")
+{
+    <a asp-controller="Reports"
+       asp-action="StaffReport"
+       class="btn btn-outline-primary">
+        Open Report
+    </a>
+}
+
+else
+{
+    <span class="badge bg-secondary">
+        Planned
+    </span>
+}
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

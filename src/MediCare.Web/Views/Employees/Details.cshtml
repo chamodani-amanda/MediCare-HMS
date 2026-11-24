@@ -1,0 +1,81 @@
+@model MediCare.Web.Models.Employee
+
+@{
+    ViewData["Title"] = "Employee Profile";
+}
+
+<div class="container py-4">
+
+    @if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success" role="alert">
+        @message
+    </div>
+}
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-4">
+
+        <h1 class="fw-bold">Employee Profile</h1>
+
+        <a asp-controller="Employees"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Staff Directory
+        </a>
+        <a asp-controller="Employees"
+   asp-action="Edit"
+   asp-route-id="@Model.Id"
+   class="btn btn-primary">
+    Edit Employee
+</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <h3>@Model.FirstName @Model.LastName</h3>
+
+            <p class="text-muted">
+                Employee Number: @Model.EmployeeNumber
+            </p>
+
+            <hr />
+
+            <dl class="row">
+
+                <dt class="col-sm-4">Job Title</dt>
+                <dd class="col-sm-8">
+                    @(Model.JobTitle ?? "Not assigned")
+                </dd>
+
+                <dt class="col-sm-4">Department</dt>
+                <dd class="col-sm-8">
+                    @(Model.Department?.Name ?? "Not assigned")
+                </dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">
+                    @(Model.Email ?? "Not provided")
+                </dd>
+
+                <dt class="col-sm-4">Phone</dt>
+                <dd class="col-sm-8">
+                    @(Model.PhoneNumber ?? "Not provided")
+                </dd>
+
+                <dt class="col-sm-4">Hire Date</dt>
+                <dd class="col-sm-8">
+                    @Model.HireDate.ToString("yyyy-MM-dd")
+                </dd>
+
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">
+                    @(Model.IsActive ? "Active" : "Inactive")
+                </dd>
+
+            </dl>
+
+        </div>
+    </div>
+</div>

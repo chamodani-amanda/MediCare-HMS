@@ -1,0 +1,12 @@
+@model MediCare.Web.ViewModels.LabResultForm
+@using MediCare.Web.Models
+@{ViewData["Title"]=Model.IsCorrection?"Correct Laboratory Result":"Laboratory Result Draft";}
+<div class="py-4"><h1 class="fw-bold">@ViewData["Title"]</h1><p>@Model.Request.PatientLabel · @Model.Request.TestCode — @Model.Request.TestName</p><p>Sample: @Model.Request.SampleIdentifier</p>
+<form asp-action="@(Model.Id==Guid.Empty?"EnterResult":"EditResult")" asp-route-id="@Model.Id" method="post"><div asp-validation-summary="All" class="text-danger" role="alert"></div>
+<input asp-for="LabRequestId" type="hidden"/><input asp-for="CreationToken" type="hidden"/><input asp-for="Version" type="hidden"/>
+@if(Model.Request.ResultKind==LabResultKind.Numeric){<div class="mb-3"><label asp-for="NumericValue" class="form-label"></label><input asp-for="NumericValue" type="number" step="0.00000001" class="form-control"/></div>}
+else{<div class="mb-3"><label asp-for="TextValue" class="form-label"></label><textarea asp-for="TextValue" maxlength="4000" class="form-control" rows="4"></textarea></div>}
+<p>Unit: @(Model.Request.Unit??"Not configured") · Reference range: @(Model.Request.ReferenceRange??"Not configured")</p>
+<div class="mb-3"><label asp-for="Comments" class="form-label"></label><textarea asp-for="Comments" maxlength="2000" class="form-control" rows="3"></textarea></div>
+@if(Model.IsCorrection){<div class="mb-3"><label asp-for="CorrectionReason" class="form-label"></label><textarea asp-for="CorrectionReason" maxlength="1000" required class="form-control" rows="2"></textarea></div>}
+<p class="text-muted">Save a private draft, then validate and finalize it from the request. Finalized revisions cannot be overwritten.</p><button class="btn btn-primary">Save Draft</button> <a asp-action="Details" asp-route-id="@Model.Request.Id" class="btn btn-outline-secondary">Back to Request</a></form></div>

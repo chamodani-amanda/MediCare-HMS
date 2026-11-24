@@ -1,155 +1,304 @@
-html {
-  font-size: 14px;
+/* =========================
+   LOGIN PAGE
+========================= */
+
+body.mc-login-layout {
+    min-height: 100vh;
+    background: #eef5f8;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
-}
-/* MediCare HMS - Brand Colors */
-
-:root {
-    --medicare-primary: #12314b;
-    --medicare-accent: #0d9488;
-    --medicare-background: #f5f8fc;
-}
-
-body {
-    background: var(--medicare-background);
-    font-family: "Segoe UI", Arial, sans-serif;
-    color: #203247;
-}
-
-/* Homepage Hero */
-
-.medicare-hero {
-    background: linear-gradient(
-        120deg,
-        #12314b,
-        #087f8c
-    );
-
-    color: white;
-    padding: 55px 45px;
-    border-radius: 20px;
-}
-
-.medicare-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #a8eee3;
-}
-
-.medicare-symbol {
-    width: 150px;
-    height: 150px;
-    background: rgba(255,255,255,0.12);
-    border: 3px solid rgba(255,255,255,0.25);
-    border-radius: 35px;
-    display: inline-flex;
+/* Full login page background */
+.mc-login-page {
+    min-height: calc(100vh - 70px);
+    display: flex;
     align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mc-login-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('/images/medicare-login-bg.webp') center center / cover no-repeat;
+    filter: blur(5px);              /* was stronger before */
+    transform: scale(1.03);         /* keep image visible nicely */
+    opacity: 0.82;                  /* clearer image */
+    z-index: 0;
+}
+
+.mc-login-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.18);   /* lighter overlay */
+    z-index: 1;
+}
+
+/* Main login box */
+.mc-login-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1180px;              /* reduced from larger size */
+    min-height: 620px;              /* reduced height */
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(17, 57, 84, 0.16);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* Left side */
+.mc-login-left {
+    background: rgba(233, 248, 248, 0.92);
+    padding: 44px 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.mc-login-left .mc-login-main-logo {
+    width: 320px;         /* bigger center logo */
+    max-width: 100%;
+    margin: 0 auto 18px auto;
+    display: block;
+}
+
+.mc-login-system-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #118c93;
+    margin-bottom: 28px;
+}
+
+.mc-login-description {
+    font-size: 1.08rem;
+    line-height: 1.8;
+    color: #174b68;
+    max-width: 460px;
+    margin: 0 auto 36px auto;
+}
+
+.mc-login-features {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+}
+
+.mc-login-feature {
+    text-align: center;
+    color: #123d5d;
+    font-weight: 700;
+    font-size: 0.98rem;
+}
+
+.mc-login-feature-icon {
+    width: 74px;
+    height: 74px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+    background: #d8f3f1;
+    color: #0b8e97;
+    font-size: 1.9rem;
+}
+
+/* Right side */
+.mc-login-right {
+    background: rgba(255, 255, 255, 0.98);
+    padding: 48px 46px;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
-.medicare-symbol span {
-    font-size: 100px;
-    line-height: 1;
-    font-weight: 300;
-    color: white;
+.mc-login-right h1,
+.mc-login-right h2,
+.mc-login-right h3 {
+    color: #123f67;
+    font-weight: 800;
+    font-size: 4rem;
+    margin-bottom: 18px;
+    line-height: 1.05;
 }
 
-/* Module Cards */
-
-.medicare-card {
-    background: #ffffff;
-    padding: 28px;
-    border-radius: 16px;
-    border: 1px solid #e4eaf1;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-    min-height: 205px;
-    height: 100%;
-    transition: transform 0.2s ease;
-}
-
-.medicare-card:hover {
-    transform: translateY(-4px);
-}
-
-.medicare-card h5 {
-    color: var(--medicare-primary);
-    font-weight: 700;
-}
-
-.medicare-card p {
-    color: #64748b;
-    font-size: 14px;
+.mc-login-subtext {
+    font-size: 1.1rem;
+    color: #56718a;
+    margin-bottom: 24px;
     line-height: 1.7;
 }
 
-@media (max-width: 576px) {
-    .medicare-hero {
-        padding: 32px 24px;
-    }
-}
-/* MediCare - Authentication Page */
-
-.medicare-login-brand {
-    background: linear-gradient(
-        145deg,
-        #102d46 0%,
-        #0a6370 65%,
-        #0d9488 100%
-    );
-
-    color: #ffffff;
-    min-height: 480px;
+.mc-login-right .form-label {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #163d5d;
+    margin-bottom: 8px;
 }
 
-.medicare-login-brand h1 {
-    line-height: 1.2;
+.mc-login-right .form-control {
+    min-height: 62px;
+    border-radius: 18px;
+    border: 1px solid #d7e2ee;
+    background: #eef4ff;
+    font-size: 1.08rem;
+    padding: 14px 18px;
 }
 
-.form-control:focus {
-    border-color: #0d9488;
-    box-shadow: 0 0 0 0.2rem rgba(13,148,136,0.15);
+.mc-login-right .form-control:focus {
+    border-color: #18a6a6;
+    box-shadow: 0 0 0 0.18rem rgba(24, 166, 166, 0.18);
+    background: #f7fbff;
 }
 
-.btn-primary {
-    background-color: #0d9488;
-    border-color: #0d9488;
+/* Sign in button */
+.mc-login-submit {
+    min-height: 64px;
+    border: none;
+    border-radius: 18px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(90deg, #1fc4b8, #07879a);
+    box-shadow: 0 10px 20px rgba(16, 153, 153, 0.18);
+    transition: all 0.25s ease;
 }
 
-.btn-primary:hover {
-    background-color: #08796f;
-    border-color: #08796f;
+.mc-login-submit:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.03);
 }
 
-@media (max-width: 991px) {
-    .medicare-login-brand {
+.mc-login-note {
+    text-align: center;
+    color: #7d8da1;
+    font-size: 0.98rem;
+    margin-top: 18px;
+}
+
+/* Footer */
+footer.footer {
+    position: relative;
+    z-index: 3;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .mc-login-card {
+        grid-template-columns: 1fr;
+        max-width: 760px;
         min-height: auto;
     }
+
+    .mc-login-left,
+    .mc-login-right {
+        padding: 34px 28px;
+    }
+
+    .mc-login-right h1,
+    .mc-login-right h2,
+    .mc-login-right h3 {
+        font-size: 2.6rem;
+    }
+
+    .mc-login-left .mc-login-main-logo {
+        width: 260px;
+    }
+}
+
+@media (max-width: 576px) {
+    .mc-login-page {
+        padding: 14px;
+    }
+
+    .mc-login-left .mc-login-main-logo {
+        width: 220px;
+    }
+
+    .mc-login-right h1,
+    .mc-login-right h2,
+    .mc-login-right h3 {
+        font-size: 2.1rem;
+    }
+
+    
+/* ========================================
+   MEDICARE GLOBAL FOOTER FIX
+   ======================================== */
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    margin-bottom: 0 !important;
+}
+
+/* Header stays at the top */
+body > header {
+    flex-shrink: 0;
+}
+
+/* Main content takes available space */
+body > .container,
+body > .container-fluid {
+    flex: 1 0 auto;
+}
+
+/* Footer must never overlap page content */
+body > footer.footer {
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    display: block;
+    flex-shrink: 0;
+
+    width: 100%;
+    height: auto !important;
+    min-height: 40px;
+
+    padding: 10px 15px !important;
+    margin: 0 !important;
+
+    line-height: 1.5 !important;
+    white-space: normal !important;
+
+    background: #f6f9fc;
+    border-top: 1px solid #dce6ef;
+
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Footer links */
+body > footer.footer a {
+    color: #0d9488;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+body > footer.footer a:hover {
+    color: #075e70;
+    text-decoration: underline;
+}
 }

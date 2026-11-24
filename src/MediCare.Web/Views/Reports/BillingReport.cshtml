@@ -1,0 +1,349 @@
+
+@model MediCare.Web.ViewModels.BillingReportViewModel
+
+@{
+    ViewData["Title"] = "Billing Report";
+
+    var sriLanka = TimeZoneInfo
+        .FindSystemTimeZoneById("Asia/Colombo");
+
+    var filters = new[]
+    {
+        new { Value = "All", Label = "All Invoices" },
+        new { Value = "Draft", Label = "Draft" },
+        new { Value = "Issued", Label = "Issued" },
+        new { Value = "Voided", Label = "Voided" },
+        new { Value = "Unpaid", Label = "Unpaid" },
+        new { Value = "PartiallyPaid", Label = "Partially Paid" },
+        new { Value = "Paid", Label = "Paid" }
+    };
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+            <h1 class="fw-bold">Billing Report</h1>
+
+            <p class="text-muted">
+                Invoice, payment and outstanding balance summary.
+                Amounts are in LKR.
+            </p>
+        </div>
+
+        <a asp-controller="Reports"
+           asp-action="Index"
+           class="btn btn-outline-secondary d-print-none">
+            Back to Reports
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Invoices</p>
+                    <h3>@Model.TotalInvoices</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Draft</p>
+                    <h3>@Model.DraftInvoices</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Issued</p>
+                    <h3>@Model.IssuedInvoices</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Voided</p>
+                    <h3>@Model.VoidedInvoices</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Issued Amount</p>
+                    <h3>LKR @Model.IssuedAmount.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Net Received</p>
+                    <h3>LKR @Model.NetReceivedAmount.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Outstanding</p>
+                    <h3>LKR @Model.OutstandingAmount.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4 d-print-none">
+        <div class="card-body p-4">
+
+            <form asp-controller="Reports"
+                  asp-action="BillingReport"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Patient / Invoice Search
+                    </label>
+
+                    <input type="search"
+                           name="search"
+                           value="@Model.Search"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Patient name, number or MC-I number" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+
+                    <select name="status" class="form-select">
+                        @foreach (var filter in filters)
+                        {
+                            <option value="@filter.Value"
+                                    selected="@(Model.Status == filter.Value)">
+                                @filter.Label
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+
+                    <input type="date"
+                           name="fromDate"
+                           value="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+
+                    <input type="date"
+                           name="toDate"
+                           value="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="BillingReport"
+                       class="btn btn-outline-secondary">
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Invoice Records (@Model.MatchingInvoices)
+                </h5>
+
+                <div class="d-flex gap-2 d-print-none">
+
+                    <a asp-action="ExportBillingCsv"
+                       asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status"
+                       asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                       class="btn btn-outline-success">
+                        Export CSV
+                    </a>
+
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-outline-primary">
+                        Print
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Patient</th>
+                            <th>Created (Sri Lanka)</th>
+                            <th>State</th>
+                            <th>Total (LKR)</th>
+                            <th>Net Paid (LKR)</th>
+                            <th>Balance (LKR)</th>
+                            <th>Payment Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var invoice in Model.Invoices)
+                        {
+                            <tr>
+                                <td>@invoice.DisplayNumber</td>
+
+                                <td>
+                                    @invoice.PatientName
+                                    <div class="text-muted small">
+                                        @invoice.PatientNumber
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @(TimeZoneInfo.ConvertTimeFromUtc(
+                                        invoice.CreatedAtUtc,
+                                        sriLanka).ToString("yyyy-MM-dd HH:mm"))
+                                </td>
+
+                                <td>@invoice.State</td>
+
+                                <td>@invoice.Total.ToString("N2")</td>
+
+                                <td>
+                                    @if (invoice.State ==
+                                        MediCare.Web.Models.InvoiceState.Issued)
+                                    {
+                                        @invoice.NetPaid.ToString("N2")
+                                    }
+                                    else
+                                    {
+                                        <span>—</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (invoice.Balance.HasValue)
+                                    {
+                                        @invoice.Balance.Value.ToString("N2")
+                                    }
+                                    else
+                                    {
+                                        <span>—</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @invoice.PaymentStatus
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.Invoices.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8"
+                                    class="text-center text-muted py-4">
+                                    No matching invoices found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3 d-print-none">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="BillingReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page - 1)"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="BillingReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page + 1)"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Summary counts and financial totals follow the search
+        and creation-date filters, regardless of status.
+        Financial totals include issued invoices only.
+        Reversed payments are deducted from net received.
+        Printing includes the current page only.
+    </p>
+
+</div>

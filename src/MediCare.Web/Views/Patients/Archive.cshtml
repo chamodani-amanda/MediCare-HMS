@@ -1,0 +1,10 @@
+@model MediCare.Web.Models.Patient
+@{ ViewData["Title"] = "Archive Patient"; }
+<h1>Archive Patient</h1>
+<p>Archive @Model.FirstName @Model.LastName (@Model.PatientNumber)? The patient will leave active searches. Existing information and documents will be preserved.</p>
+<form asp-action="Archive" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="version" value="@Model.Version" />
+    <button class="btn btn-danger" type="submit">Confirm Archive</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+</form>

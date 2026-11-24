@@ -1,0 +1,17 @@
+@model MediCare.Web.ViewModels.LabReport
+@using MediCare.Web.Services
+@{Layout=null;var q=Model.Request;var r=Model.Result;}
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>MediCare confidential laboratory report</title><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/><style>body{padding:2rem}@@media print{.print-controls{display:none}}</style></head><body>
+<div class="print-controls mb-4"><button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button> <a asp-action="Details" asp-route-id="@q.Id">Back to Request</a></div>
+<h1>MediCare — Laboratory Report</h1><p class="badge bg-success">FINALIZED · Revision @r.Number</p>
+<dl class="row"><dt class="col-md-3">Patient</dt><dd class="col-md-9">@q.PatientLabel</dd><dt class="col-md-3">Requesting doctor</dt><dd class="col-md-9">Dr. @q.DoctorName</dd>
+<dt class="col-md-3">Test</dt><dd class="col-md-9">@q.TestCode — @q.TestName (@q.Category)</dd><dt class="col-md-3">Sample</dt><dd class="col-md-9">@q.SampleIdentifier — @q.SampleType</dd>
+<dt class="col-md-3">Result</dt><dd class="col-md-9 text-break" style="white-space:pre-wrap">@(r.NumericValue?.ToString("G29",System.Globalization.CultureInfo.InvariantCulture)??r.TextValue) @q.Unit</dd>
+<dt class="col-md-3">Configured reference range</dt><dd class="col-md-9">@(q.ReferenceRange??"Not configured")</dd>
+<dt class="col-md-3">Author</dt><dd class="col-md-9">@r.AuthorUserId</dd><dt class="col-md-3">Finalized</dt><dd class="col-md-9">@HospitalTime.Local(r.FinalizedAtUtc!.Value).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</dd>
+@if(q.CollectedAtUtc.HasValue){<dt class="col-md-3">Collected</dt><dd class="col-md-9">@HospitalTime.Local(q.CollectedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @q.CollectedByUserId</dd>}
+@if(q.ReceivedAtUtc.HasValue){<dt class="col-md-3">Received</dt><dd class="col-md-9">@HospitalTime.Local(q.ReceivedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @q.ReceivedByUserId</dd>}
+@if(q.ProcessingAtUtc.HasValue){<dt class="col-md-3">Processing</dt><dd class="col-md-9">@HospitalTime.Local(q.ProcessingAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @q.ProcessingByUserId</dd>}
+</dl><h2 class="h5">Comments</h2><p class="text-break" style="white-space:pre-wrap">@(r.Comments??"None")</p>
+@if(r.CorrectionReason!=null){<h2 class="h5">Correction reason</h2><p class="text-break">@r.CorrectionReason</p>}
+<p class="small text-muted">Confidential — authorized clinical use only. Request @q.Id · Result @r.Id. Prior finalized revisions remain in the request history.</p></body></html>

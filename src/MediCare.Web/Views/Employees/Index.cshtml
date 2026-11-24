@@ -1,0 +1,175 @@
+@model MediCare.Web.ViewModels.EmployeeListViewModel
+
+@{
+    ViewData["Title"] = "Staff Directory";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+            <h1 class="fw-bold">Staff Directory</h1>
+            <p class="text-muted">
+                Manage registered MediCare employees.
+            </p>
+        </div>
+
+        <a asp-controller="Employees"
+           asp-action="Create"
+           class="btn btn-primary">
+            + Register Employee
+        </a>
+
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <form method="get"
+                  asp-controller="Employees"
+                  asp-action="Index"
+                  class="row g-2 mb-4">
+
+                <div class="col-md-8">
+                    <input type="search"
+                           name="search"
+                           value="@Model.SearchTerm"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Search employee name or number" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Search
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary w-100">
+                        Clear
+                    </a>
+                </div>
+
+            </form>
+
+            <p class="text-muted">
+                Total Employees: @Model.TotalEmployees
+            </p>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee Number</th>
+                            <th>Full Name</th>
+                            <th>Job Title</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var employee in Model.Employees)
+                        {
+                            <tr>
+                                <td>@employee.EmployeeNumber</td>
+
+                                <td>@employee.FullName</td>
+
+                                <td>
+                                    @(employee.JobTitle ?? "Not assigned")
+                                </td>
+
+                                <td>
+                                    @(employee.DepartmentName ?? "Not assigned")
+                                </td>
+
+                                <td>
+                                    @if (employee.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+    <a asp-controller="Employees"
+       asp-action="Details"
+       asp-route-id="@employee.Id"
+       class="btn btn-sm btn-outline-primary">
+        View Profile
+    </a>
+</td>
+                            </tr>
+                        }
+
+                        @if (Model.Employees.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6"
+                                    class="text-center text-muted py-4">
+                                    No matching employees found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(Model.Page - 1)"
+                               asp-route-search="@Model.SearchTerm"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(Model.Page + 1)"
+                               asp-route-search="@Model.SearchTerm"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

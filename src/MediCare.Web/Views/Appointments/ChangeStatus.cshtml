@@ -1,0 +1,18 @@
+@model MediCare.Web.ViewModels.AppointmentChangeViewModel
+@using MediCare.Web.Models
+@using MediCare.Web.Services
+@{ ViewData["Title"] = "Update Appointment Status"; }
+<div class="py-4"><h1 class="fw-bold mb-3">Update Appointment Status</h1>
+    <p>@Model.Appointment.PatientName · Dr. @Model.Appointment.DoctorName · @HospitalTime.Local(Model.Appointment.StartAtUtc).ToString("yyyy-MM-dd HH:mm") (Sri Lanka time)</p>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4">
+        <p>Only Scheduled appointments can change status. Completed and NoShow require the appointment to have ended. Cancelled appointments remain in history and release their reserved time.</p>
+        <form asp-action="ChangeStatus" method="post">
+            <input asp-for="Id" type="hidden" /><input asp-for="Version" type="hidden" />
+            <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+            <div class="mb-3"><label asp-for="Status" class="form-label"></label><select asp-for="Status" class="form-select"><option value="Cancelled">Cancelled</option><option value="Completed">Completed</option><option value="NoShow">NoShow</option></select></div>
+            <div class="mb-3"><label asp-for="CancellationReason" class="form-label">Cancellation reason (optional, administrative only)</label><textarea asp-for="CancellationReason" rows="3" maxlength="500" class="form-control"></textarea></div>
+            <div class="d-flex justify-content-end gap-2"><a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back</a><button type="submit" class="btn btn-primary">Confirm Status Change</button></div>
+        </form>
+    </div></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

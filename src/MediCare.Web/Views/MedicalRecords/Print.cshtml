@@ -1,0 +1,4 @@
+@model MediCare.Web.ViewModels.MedicalRecordDetails
+@{ Layout = null; }
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>MediCare confidential medical report</title><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /><style>@@media print { .print-controls { display:none; } .card { box-shadow:none!important; } } body { padding: 2rem; }</style></head>
+<body><div class="print-controls mb-3"><button type="button" class="btn btn-primary" onclick="window.print()">Print Report</button><a asp-action="Details" asp-route-id="@Model.Revision.Id" class="btn btn-outline-secondary">Back</a></div><partial name="_Report" model="Model" /></body></html>

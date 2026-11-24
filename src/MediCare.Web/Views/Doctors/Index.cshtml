@@ -1,0 +1,40 @@
+@model MediCare.Web.ViewModels.DoctorDirectoryViewModel
+@{ ViewData["Title"] = "Doctors"; }
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div><h1 class="fw-bold">Doctor Directory</h1><p class="text-muted">Find doctors by name, registration number, specialization or department.</p></div>
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="d-flex gap-2"><a asp-controller="Departments" asp-action="Index" class="btn btn-outline-secondary">Departments</a><a asp-action="Create" class="btn btn-primary">Register Doctor</a></div>
+        }
+    </div>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end mb-4">
+            <div class="col-md-7"><label for="search" class="form-label">Search doctors</label><input id="search" name="search" value="@Model.Search" maxlength="100" class="form-control" /></div>
+            @if (User.IsInRole("Administrator"))
+            {
+                <div class="col-md-3 form-check"><input asp-for="IncludeInactive" class="form-check-input" /><label asp-for="IncludeInactive" class="form-check-label">Include inactive doctors</label></div>
+            }
+            <div class="col-md-2"><button class="btn btn-primary" type="submit">Search</button><a asp-action="Index" class="btn btn-link">Clear</a></div>
+        </form>
+        <p class="text-muted">@Model.TotalDoctors doctor(s) found</p>
+        <div class="table-responsive"><table class="table table-hover align-middle">
+            <thead><tr><th>Doctor</th><th>Registration</th><th>Specialization</th><th>Department</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            @foreach (var doctor in Model.Doctors)
+            {
+                <tr><td>Dr. @doctor.FirstName @doctor.LastName</td><td>@doctor.RegistrationNumber</td><td>@doctor.Specialization</td><td>@doctor.Department.Name</td>
+                    <td><span class="badge @(doctor.IsActive ? "bg-success" : "bg-secondary")">@(doctor.IsActive ? "Active" : "Inactive")</span></td>
+                    <td><a asp-action="Details" asp-route-id="@doctor.Id" class="btn btn-sm btn-outline-primary">View Profile</a>
+                    @if (User.IsInRole("Administrator")) { <a asp-action="Edit" asp-route-id="@doctor.Id" class="btn btn-sm btn-outline-secondary">Edit</a> }</td></tr>
+            }
+            @if (Model.Doctors.Count == 0) { <tr><td colspan="6" class="text-muted">No doctors match your search.</td></tr> }
+            </tbody>
+        </table></div>
+        <nav aria-label="Doctor directory pages" class="d-flex gap-3 align-items-center">
+            @if (Model.Page > 1) { <a asp-action="Index" asp-route-search="@Model.Search" asp-route-includeInactive="@Model.IncludeInactive" asp-route-page="@(Model.Page - 1)">Previous</a> }
+            <span>Page @Model.Page of @Model.TotalPages</span>
+            @if (Model.Page < Model.TotalPages) { <a asp-action="Index" asp-route-search="@Model.Search" asp-route-includeInactive="@Model.IncludeInactive" asp-route-page="@(Model.Page + 1)">Next</a> }
+        </nav>
+    </div></div>
+</div>

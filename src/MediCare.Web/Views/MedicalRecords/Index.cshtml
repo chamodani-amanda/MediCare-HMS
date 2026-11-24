@@ -1,0 +1,25 @@
+@model MediCare.Web.ViewModels.MedicalRecordList
+@using MediCare.Web.Services
+@{ ViewData["Title"] = "Medical Records"; }
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4"><h1 class="fw-bold">Medical Records</h1><a asp-controller="Appointments" asp-action="Index" class="btn btn-outline-primary">Open an appointment to start a consultation</a></div>
+    <p class="text-muted">History is limited to patients in your authorized care. Drafts are private to their author. Times shown in Asia/Colombo.</p>
+    <form method="get" class="row g-3 mb-4">
+        <input type="hidden" asp-for="PatientId" />
+        <div class="col-md-5"><label asp-for="Search" class="form-label">Patient name or number</label><input asp-for="Search" maxlength="100" class="form-control" /></div>
+        <div class="col-md-3"><label asp-for="Date" class="form-label">Revision date</label><input asp-for="Date" type="date" class="form-control" /></div>
+        <div class="col-md-2"><label asp-for="State" class="form-label">State</label><select asp-for="State" class="form-select"><option value="">All</option><option>Draft</option><option>Finalized</option></select></div>
+        <div class="col-md-2 align-self-end"><button class="btn btn-primary">Filter</button></div>
+    </form>
+    <p>@Model.Total revision(s)</p>
+    <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Patient</th><th>Doctor</th><th>Revision</th><th>Created</th><th>State</th><th></th></tr></thead><tbody>
+    @foreach (var r in Model.Records)
+    { <tr><td><a asp-action="Index" asp-route-patientId="@r.PatientId">@r.PatientLabel</a></td><td>Dr. @r.DoctorName</td><td>@r.Number</td><td>@HospitalTime.Local(r.CreatedAtUtc).ToString("yyyy-MM-dd HH:mm")</td><td>@(r.FinalizedAtUtc.HasValue ? "Finalized" : "Draft")</td><td><a asp-action="Details" asp-route-id="@r.Id">View</a></td></tr> }
+    </tbody></table></div>
+    @if (Model.Records.Count == 0) { <div class="alert alert-info">No accessible records match these filters.</div> }
+    <nav aria-label="Medical record pages" class="d-flex align-items-center gap-3">
+        @if (Model.Page > 1) { <a asp-action="Index" asp-route-patientId="@Model.PatientId" asp-route-search="@Model.Search" asp-route-date="@(Model.Date?.ToString("yyyy-MM-dd"))" asp-route-state="@Model.State" asp-route-page="@(Model.Page-1)">Previous</a> }
+        <span>Page @Model.Page of @Model.TotalPages</span>
+        @if (Model.Page < Model.TotalPages) { <a asp-action="Index" asp-route-patientId="@Model.PatientId" asp-route-search="@Model.Search" asp-route-date="@(Model.Date?.ToString("yyyy-MM-dd"))" asp-route-state="@Model.State" asp-route-page="@(Model.Page+1)">Next</a> }
+    </nav>
+</div>

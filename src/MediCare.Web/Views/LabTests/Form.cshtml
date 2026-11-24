@@ -1,0 +1,12 @@
+@model MediCare.Web.ViewModels.LabTestForm
+@using MediCare.Web.Models
+@{ ViewData["Title"]=Model.Id==Guid.Empty?"Add Laboratory Test":"Edit Laboratory Test"; }
+<div class="py-4"><h1 class="fw-bold">@ViewData["Title"]</h1><p class="text-muted">Changes apply to new requests. Existing requests retain their ordered test details. Reference ranges are configured text; no interpretation is generated.</p>
+<form asp-action="@(Model.Id==Guid.Empty?"Create":"Edit")" asp-route-id="@Model.Id" method="post"><div asp-validation-summary="All" class="text-danger" role="alert"></div><input asp-for="Version" type="hidden" />
+<div class="row g-3">
+<div class="col-md-4"><label asp-for="Code" class="form-label"></label><input asp-for="Code" class="form-control" required maxlength="40" /></div><div class="col-md-8"><label asp-for="Name" class="form-label"></label><input asp-for="Name" class="form-control" required maxlength="160" /></div>
+<div class="col-md-6"><label asp-for="Category" class="form-label"></label><input asp-for="Category" class="form-control" required maxlength="80" /></div><div class="col-md-6"><label asp-for="SampleType" class="form-label"></label><input asp-for="SampleType" class="form-control" required maxlength="100" /></div>
+<div class="col-md-4"><label asp-for="ResultKind" class="form-label"></label><select asp-for="ResultKind" asp-items="Html.GetEnumSelectList<LabResultKind>()" class="form-select"></select></div>
+<div class="col-md-4"><label asp-for="Unit" class="form-label"></label><input asp-for="Unit" class="form-control" maxlength="60" /></div><div class="col-md-4"><label asp-for="ReferenceRange" class="form-label"></label><input asp-for="ReferenceRange" class="form-control" maxlength="300" /></div>
+<div class="col-12"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control" rows="3" maxlength="2000"></textarea></div><div class="col-12"><label><input asp-for="IsActive" /> Active and available for new requests</label></div></div>
+<div class="d-flex gap-2 mt-4"><button class="btn btn-primary">Save Test</button><a asp-action="Index" class="btn btn-outline-secondary">Back to Catalogue</a></div></form></div>

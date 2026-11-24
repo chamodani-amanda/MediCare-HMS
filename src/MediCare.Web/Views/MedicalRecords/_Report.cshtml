@@ -1,0 +1,27 @@
+@model MediCare.Web.ViewModels.MedicalRecordDetails
+@using MediCare.Web.Services
+@{ var r = Model.Revision; var record = r.MedicalRecord; }
+<article class="card border-0 shadow-sm rounded-4 mb-4"><div class="card-body p-4">
+    <h1 class="h3">Medical Consultation · Revision @r.Number</h1>
+    <p class="badge @(r.FinalizedAtUtc.HasValue ? "bg-success" : "bg-warning text-dark")">@(r.FinalizedAtUtc.HasValue ? "Finalized" : "DRAFT — NOT FINALIZED")</p>
+    <dl class="row">
+        <dt class="col-md-3">Patient</dt><dd class="col-md-9">@record.Patient.PatientNumber — @record.Patient.FirstName @record.Patient.LastName</dd>
+        <dt class="col-md-3">Treating doctor</dt><dd class="col-md-9">Dr. @record.Doctor.FirstName @record.Doctor.LastName (@record.Doctor.RegistrationNumber)</dd>
+        <dt class="col-md-3">Author account</dt><dd class="col-md-9 text-break">@r.AuthorUserId</dd>
+        <dt class="col-md-3">Created</dt><dd class="col-md-9">@HospitalTime.Local(r.CreatedAtUtc).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</dd>
+        <dt class="col-md-3">Last updated</dt><dd class="col-md-9">@HospitalTime.Local(r.UpdatedAtUtc).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</dd>
+        @if (r.FinalizedAtUtc.HasValue) { <dt class="col-md-3">Finalized</dt><dd class="col-md-9">@HospitalTime.Local(r.FinalizedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</dd> }
+    </dl>
+    @if (r.AmendmentReason != null) { <h2 class="h5">Amendment reason</h2><p class="text-break" style="white-space:pre-wrap">@r.AmendmentReason</p> }
+    <h2 class="h5">Symptoms</h2><p class="text-break" style="white-space:pre-wrap">@r.Symptoms</p>
+    <h2 class="h5">Clinical observations</h2><p class="text-break" style="white-space:pre-wrap">@r.Observations</p>
+    <h2 class="h5">Diagnosis</h2><p class="text-break" style="white-space:pre-wrap">@r.Diagnosis</p>
+    <h2 class="h5">Treatment notes</h2><p class="text-break" style="white-space:pre-wrap">@r.Treatment</p>
+    <h2 class="h5">Prescriptions</h2>
+    <div class="table-responsive"><table class="table"><thead><tr><th>Medication</th><th>Dosage</th><th>Route</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead><tbody>
+    @foreach (var p in r.Prescriptions.OrderBy(p => p.Position))
+    { <tr><td class="text-break">@p.Medication<br />@if(p.Medicine != null){<span>@p.Medicine.Label</span><br /><span>Authorized total: @p.AuthorizedQuantity @p.DispensingUnit (includes prior dispensing)</span>}else{<span>Not authorized for inventory dispensing</span>}</td><td>@p.Dosage</td><td>@p.Route</td><td>@p.Frequency</td><td>@p.Duration</td><td class="text-break">@p.Instructions</td></tr> }
+    </tbody></table></div>
+    @if (r.Prescriptions.Count == 0) { <p>No prescriptions recorded.</p> }
+    <p class="small text-muted">Confidential — authorized clinical use only. Encounter @record.Id</p>
+</div></article>

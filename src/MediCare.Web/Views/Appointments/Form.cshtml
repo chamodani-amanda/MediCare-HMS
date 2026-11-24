@@ -1,0 +1,32 @@
+@model MediCare.Web.ViewModels.AppointmentFormViewModel
+@{ bool rescheduling = Model.Id != Guid.Empty; ViewData["Title"] = rescheduling ? "Reschedule Appointment" : "Book Appointment"; }
+<div class="py-4"><h1 class="fw-bold mb-3">@ViewData["Title"]</h1>
+    <p class="text-muted">Sri Lanka time (Asia/Colombo). Starts use 15-minute intervals; the full duration must fit the doctor's working hours.</p>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4">
+        @if (!rescheduling)
+        {
+            <form asp-action="Create" method="get" class="row g-2 mb-4 align-items-end">
+                <div class="col-md-8"><label for="patientSearch" class="form-label">Find an existing active patient (first 50 matches shown)</label><input id="patientSearch" name="patientSearch" value="@Model.PatientSearch" maxlength="100" class="form-control" /></div>
+                <input type="hidden" name="doctorId" value="@Model.DoctorId" /><input type="hidden" name="date" value="@Model.Date?.ToString("yyyy-MM-dd")" /><input type="hidden" name="startTime" value="@Model.StartTime?.ToString("HH:mm")" /><input type="hidden" name="durationMinutes" value="@Model.DurationMinutes" />
+                <div class="col-md-4"><button type="submit" class="btn btn-outline-primary">Find Patient</button></div>
+            </form>
+        }
+        <form asp-action="@(rescheduling ? "Reschedule" : "Create")" method="post">
+            <input asp-for="Id" type="hidden" /><input asp-for="Version" type="hidden" /><input asp-for="BookingToken" type="hidden" />
+            <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+            <div class="row g-3">
+                <div class="col-md-6"><label asp-for="PatientId" class="form-label"></label>
+                    @if (rescheduling) { <input asp-for="PatientId" type="hidden" /><select asp-for="PatientId" asp-items="Model.Patients" disabled class="form-select"></select> }
+                    else { <select asp-for="PatientId" asp-items="Model.Patients" class="form-select"><option value="">Select patient</option></select> }
+                    <span asp-validation-for="PatientId" class="text-danger"></span></div>
+                <div class="col-md-6"><label asp-for="DoctorId" class="form-label"></label><select asp-for="DoctorId" asp-items="Model.Doctors" class="form-select"><option value="">Select doctor</option></select><span asp-validation-for="DoctorId" class="text-danger"></span></div>
+                <div class="col-md-4"><label asp-for="Date" class="form-label"></label><input asp-for="Date" type="date" class="form-control" /><span asp-validation-for="Date" class="text-danger"></span></div>
+                <div class="col-md-4"><label asp-for="StartTime" class="form-label"></label><input asp-for="StartTime" asp-format="{0:HH:mm}" type="time" step="900" class="form-control" /><span asp-validation-for="StartTime" class="text-danger"></span></div>
+                <div class="col-md-4"><label asp-for="DurationMinutes" class="form-label"></label><select asp-for="DurationMinutes" class="form-select">@foreach (var duration in new[] {15,30,45,60}) { <option value="@duration">@duration minutes</option> }</select></div>
+            </div>
+            <p class="form-text">Refresh availability before booking. Another user may book a displayed time before you submit.</p>
+            <div class="d-flex flex-wrap justify-content-end gap-2 mt-4"><a asp-action="Index" class="btn btn-outline-secondary">Back</a><a asp-action="Availability" asp-route-doctorId="@Model.DoctorId" asp-route-date="@Model.Date?.ToString("yyyy-MM-dd")" asp-route-durationMinutes="@Model.DurationMinutes" class="btn btn-outline-primary">Check Availability</a><button class="btn btn-primary" type="submit">@(rescheduling ? "Confirm Reschedule" : "Confirm Booking")</button></div>
+        </form>
+    </div></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

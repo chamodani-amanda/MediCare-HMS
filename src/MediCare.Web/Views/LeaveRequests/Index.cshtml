@@ -1,0 +1,182 @@
+@model IReadOnlyList<MediCare.Web.Models.LeaveRequest>
+
+@{
+    ViewData["Title"] = "Leave Management";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="fw-bold">Leave Management</h1>
+            <p class="text-muted">
+                Review and manage employee leave requests.
+            </p>
+        </div>
+
+        <a asp-controller="LeaveRequests"
+           asp-action="Create"
+           class="btn btn-primary">
+            + New Leave Request
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string success)
+    {
+        <div class="alert alert-success" role="alert">
+            @success
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] is string error)
+    {
+        <div class="alert alert-danger" role="alert">
+            @error
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">Employee Leave Requests</h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @request.Employee.FirstName
+                                    @request.Employee.LastName
+                                </td>
+
+                                <td>@request.LeaveType</td>
+
+                                <td>
+                                    @request.StartDate.ToString("yyyy-MM-dd")
+                                </td>
+
+                                <td>
+                                    @request.EndDate.ToString("yyyy-MM-dd")
+                                </td>
+
+                                <td>
+                                    @(request.Reason ?? "Not provided")
+                                </td>
+
+                                <td>
+                                    @if (request.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                    }
+                                    else if (request.Status == "Approved")
+                                    {
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (request.Status == "Pending")
+                                    {
+                                        <div class="d-flex gap-2 flex-wrap">
+
+                                            <form asp-controller="LeaveRequests"
+                                                  asp-action="Review"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@request.Id" />
+
+                                                <input type="hidden"
+                                                       name="version"
+                                                       value="@request.Version" />
+
+                                                <button type="submit"
+                                                        name="decision"
+                                                        value="Approved"
+                                                        class="btn btn-sm btn-success">
+                                                    Approve
+                                                </button>
+
+                                            </form>
+
+                                            <form asp-controller="LeaveRequests"
+                                                  asp-action="Review"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@request.Id" />
+
+                                                <input type="hidden"
+                                                       name="version"
+                                                       value="@request.Version" />
+
+                                                <button type="submit"
+                                                        name="decision"
+                                                        value="Rejected"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                    Reject
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Reviewed
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
+                                    No leave requests found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>

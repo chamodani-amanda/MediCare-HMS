@@ -1,0 +1,18 @@
+@model MediCare.Web.ViewModels.LabRequestList
+@using MediCare.Web.Models
+@using MediCare.Web.Services
+@{ViewData["Title"]=Model.Worklist?"Laboratory Worklist":"Laboratory Requests";}
+<div class="py-4"><div class="d-flex justify-content-between flex-wrap gap-3 mb-4"><h1 class="fw-bold">@ViewData["Title"]</h1>
+@if(User.IsInRole("Laboratory Staff")){<a asp-action="Index" asp-route-worklist="@(!Model.Worklist)" class="btn btn-outline-primary">@(Model.Worklist?"All Requests / History":"Open Worklist")</a>}</div>
+<form method="get" asp-action="Index" class="row g-3 mb-4"><input asp-for="PatientId" type="hidden"/><input asp-for="MedicalRecordId" type="hidden"/><input asp-for="Worklist" type="hidden"/>
+<div class="col-md-5"><label asp-for="Search" class="form-label">Patient name/number, test or sample ID</label><input asp-for="Search" maxlength="100" class="form-control"/></div>
+<div class="col-md-3"><label asp-for="Status" class="form-label"></label><select asp-for="Status" asp-items="Html.GetEnumSelectList<LabRequestStatus>()" class="form-select"><option value="">@(Model.Worklist?"Open requests":"All statuses")</option></select></div>
+<div class="col-md-2"><label asp-for="Date" class="form-label">Request date</label><input asp-for="Date" type="date" class="form-control"/></div><div class="col-md-2 align-self-end"><button class="btn btn-primary">Filter</button></div></form>
+<p>@Model.Total request(s) · Times shown in Asia/Colombo</p><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Patient</th><th>Test</th><th>Requested</th><th>Sample identifier</th><th>Status</th><th></th></tr></thead><tbody>
+@foreach(var r in Model.Requests){<tr><td>@r.PatientLabel</td><td>@r.TestCode — @r.TestName</td><td>@HospitalTime.Local(r.RequestedAtUtc).ToString("yyyy-MM-dd HH:mm")</td><td class="text-break">@(r.SampleIdentifier??"Awaiting collection")</td><td>@r.Status</td><td><a asp-action="Details" asp-route-id="@r.Id">View</a></td></tr>}
+</tbody></table></div>@if(Model.Requests.Count==0){<div class="alert alert-info">No accessible requests match these filters. Doctors start investigations from their own consultation record.</div>}
+<nav aria-label="Laboratory request pages" class="d-flex gap-3">
+@if(Model.Page>1){<a asp-action="Index" asp-route-page="@(Model.Page-1)" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-date="@(Model.Date?.ToString("yyyy-MM-dd"))" asp-route-patientId="@Model.PatientId" asp-route-medicalRecordId="@Model.MedicalRecordId" asp-route-worklist="@Model.Worklist">Previous</a>}
+<span>Page @Model.Page of @Model.TotalPages</span>
+@if(Model.Page<Model.TotalPages){<a asp-action="Index" asp-route-page="@(Model.Page+1)" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-date="@(Model.Date?.ToString("yyyy-MM-dd"))" asp-route-patientId="@Model.PatientId" asp-route-medicalRecordId="@Model.MedicalRecordId" asp-route-worklist="@Model.Worklist">Next</a>}
+</nav></div>

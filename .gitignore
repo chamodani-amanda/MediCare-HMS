@@ -1,0 +1,42 @@
+**/bin/
+**/obj/
+**/App_Data/
+**/TestResults/
+
+# .NET build files
+**/bin/
+**/obj/
+**/TestResults/
+artifacts/
+
+# Local application data
+**/App_Data/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/appsettings.Local.json
+secrets.json
+
+# Database backups
+*.backup
+*.bak
+*.dump
+
+# Certificates and private keys
+*.pfx
+*.pem
+*.key
+
+# Operating system files
+.DS_Store
+Thumbs.db

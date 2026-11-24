@@ -1,0 +1,342 @@
+
+@model MediCare.Web.ViewModels.LaboratoryReportViewModel
+
+@{
+    ViewData["Title"] = "Laboratory Report";
+
+    var sriLanka = TimeZoneInfo
+        .FindSystemTimeZoneById("Asia/Colombo");
+
+    var statuses = new[]
+    {
+        "All",
+        "Requested",
+        "SampleCollected",
+        "InProgress",
+        "Completed",
+        "Cancelled"
+    };
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+            <h1 class="fw-bold">Laboratory Report</h1>
+
+            <p class="text-muted">
+                Laboratory test requests and processing status.
+                Dates use Sri Lanka time.
+            </p>
+        </div>
+
+        <a asp-controller="Reports"
+           asp-action="Index"
+           class="btn btn-outline-secondary d-print-none">
+            Back to Reports
+        </a>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total</p>
+                    <h3>@Model.TotalRequests</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Requested</p>
+                    <h3>@Model.RequestedCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Sample Collected</p>
+                    <h3>@Model.SampleCollectedCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">In Progress</p>
+                    <h3>@Model.InProgressCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Completed</p>
+                    <h3>@Model.CompletedCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Cancelled</p>
+                    <h3>@Model.CancelledCount</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4 d-print-none">
+        <div class="card-body p-4">
+
+            <form asp-controller="Reports"
+                  asp-action="LaboratoryReport"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Search
+                    </label>
+
+                    <input type="search"
+                           name="search"
+                           value="@Model.Search"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Patient or laboratory test" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+
+                    <select name="status" class="form-select">
+                        @foreach (var status in statuses)
+                        {
+                            <option value="@status"
+                                    selected="@(Model.Status == status)">
+                                @status
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+
+                    <input type="date"
+                           name="fromDate"
+                           value="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+
+                    <input type="date"
+                           name="toDate"
+                           value="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="LaboratoryReport"
+                       class="btn btn-outline-secondary">
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Laboratory records -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Laboratory Requests
+                    (@Model.MatchingRequests)
+                </h5>
+
+                <div class="d-flex gap-2 d-print-none">
+
+                    <a asp-controller="Reports"
+                       asp-action="ExportLaboratoryCsv"
+                       asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status"
+                       asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                       class="btn btn-outline-success">
+                        Export CSV
+                    </a>
+
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-outline-primary">
+                        Print
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient Number</th>
+                            <th>Patient Name</th>
+                            <th>Test Code</th>
+                            <th>Test Name</th>
+                            <th>Category</th>
+                            <th>Sample ID</th>
+                            <th>Requested Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var request in Model.Requests)
+                        {
+                            var badgeClass = request.Status switch
+                            {
+                                MediCare.Web.Models.LabRequestStatus.Completed
+                                    => "bg-success",
+
+                                MediCare.Web.Models.LabRequestStatus.Cancelled
+                                    => "bg-danger",
+
+                                MediCare.Web.Models.LabRequestStatus.InProgress
+                                    => "bg-primary",
+
+                                MediCare.Web.Models.LabRequestStatus.SampleCollected
+                                    => "bg-info text-dark",
+
+                                _ => "bg-warning text-dark"
+                            };
+
+                            <tr>
+                                <td>@request.PatientNumber</td>
+
+                                <td>@request.PatientName</td>
+
+                                <td>@request.TestCode</td>
+
+                                <td>@request.TestName</td>
+
+                                <td>@request.Category</td>
+
+                                <td>
+                                    @(request.SampleIdentifier ?? "—")
+                                </td>
+
+                                <td>
+                                    @(TimeZoneInfo.ConvertTimeFromUtc(
+                                        request.RequestedAtUtc,
+                                        sriLanka).ToString("yyyy-MM-dd HH:mm"))
+                                </td>
+
+                                <td>
+                                    <span class="badge @badgeClass">
+                                        @request.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.Requests.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8"
+                                    class="text-center text-muted py-4">
+                                    No matching laboratory requests found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3 d-print-none">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="LaboratoryReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page - 1)"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="LaboratoryReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page + 1)"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Summary counts follow search and date filters.
+        Printing includes the current page only.
+        CSV export includes matching requests, up to 10,000.
+        Clinical result values are excluded from this report.
+    </p>
+
+</div>

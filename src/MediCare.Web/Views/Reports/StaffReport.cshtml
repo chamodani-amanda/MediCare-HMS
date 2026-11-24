@@ -1,0 +1,342 @@
+
+@model MediCare.Web.ViewModels.StaffReportViewModel
+
+@{
+    ViewData["Title"] = "Staff Report";
+
+    var statuses = new[]
+    {
+        "All",
+        "Active",
+        "Inactive"
+    };
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+            <h1 class="fw-bold">Staff Report</h1>
+
+            <p class="text-muted">
+                Employee, attendance and leave summary.
+            </p>
+        </div>
+
+        <a asp-controller="Reports"
+           asp-action="Index"
+           class="btn btn-outline-secondary d-print-none">
+            Back to Reports
+        </a>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Matching Employees</p>
+                    <h3>@Model.MatchingEmployees</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Active Employees</p>
+                    <h3>@Model.ActiveEmployees</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Inactive Employees</p>
+                    <h3>@Model.InactiveEmployees</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Attendance Records</p>
+                    <h3>@Model.TotalAttendanceRecords</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Open Check-ins</p>
+                    <h3>@Model.OpenCheckIns</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Pending Leave</p>
+                    <h3>@Model.PendingLeaves</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Approved Leave</p>
+                    <h3>@Model.ApprovedLeaves</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Rejected Leave</p>
+                    <h3>@Model.RejectedLeaves</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4 d-print-none">
+        <div class="card-body p-4">
+
+            <form asp-controller="Reports"
+                  asp-action="StaffReport"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Employee Search
+                    </label>
+
+                    <input type="search"
+                           name="search"
+                           value="@Model.Search"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Employee name or number" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+
+                    <select name="status" class="form-select">
+                        @foreach (var status in statuses)
+                        {
+                            <option value="@status"
+                                    selected="@(Model.Status == status)">
+                                @status
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+
+                    <input type="date"
+                           name="fromDate"
+                           value="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+
+                    <input type="date"
+                           name="toDate"
+                           value="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="StaffReport"
+                       class="btn btn-outline-secondary">
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Staff records -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Employee Records (@Model.MatchingEmployees)
+                </h5>
+
+                <div class="d-flex gap-2 d-print-none">
+
+                    <a asp-controller="Reports"
+                       asp-action="ExportStaffCsv"
+                       asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status"
+                       asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                       asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                       class="btn btn-outline-success">
+                        Export CSV
+                    </a>
+
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-outline-primary">
+                        Print
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee Number</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Job Title</th>
+                            <th>Status</th>
+                            <th>Attendance</th>
+                            <th>Open Check-ins</th>
+                            <th>Pending Leave</th>
+                            <th>Approved Leave</th>
+                            <th>Rejected Leave</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var employee in Model.Employees)
+                        {
+                            <tr>
+                                <td>@employee.EmployeeNumber</td>
+
+                                <td>@employee.FullName</td>
+
+                                <td>@employee.DepartmentName</td>
+
+                                <td>
+                                    @(employee.JobTitle ?? "Not assigned")
+                                </td>
+
+                                <td>
+                                    @if (employee.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>@employee.AttendanceRecords</td>
+
+                                <td>@employee.OpenCheckIns</td>
+
+                                <td>@employee.PendingLeaves</td>
+
+                                <td>@employee.ApprovedLeaves</td>
+
+                                <td>@employee.RejectedLeaves</td>
+                            </tr>
+                        }
+
+                        @if (Model.Employees.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="10"
+                                    class="text-center text-muted py-4">
+                                    No matching employees found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3 d-print-none">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="StaffReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page - 1)"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="StaffReport"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page + 1)"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Employee search and status filters apply to all counts.
+        The date range applies to attendance work dates and
+        overlapping leave periods. Employees without activity
+        remain visible. CSV exports up to 10,000 matching employees.
+        Printing includes the current page only.
+    </p>
+
+</div>

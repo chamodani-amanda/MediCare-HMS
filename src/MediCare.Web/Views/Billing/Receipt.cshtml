@@ -1,0 +1,6 @@
+@model MediCare.Web.ViewModels.InvoiceDetails
+@using MediCare.Web.Models
+@using MediCare.Web.Services
+@{var payment=(BillingPayment)ViewBag.Payment;ViewData["Title"]="Payment receipt";}
+<div class="d-print-none d-flex gap-2 mb-4"><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Invoice.Id">Invoice</a><button class="btn btn-outline-secondary" type="button" onclick="window.print()">Print</button><a class="btn btn-outline-primary" asp-action="Receipt" asp-route-id="@payment.Id" asp-route-pdf="true">Download PDF</a></div>
+@foreach(var text in BillingPdf.Text(Model,payment)){<p class="text-break">@text</p>}

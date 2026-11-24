@@ -1,0 +1,18 @@
+@model MediCare.Web.ViewModels.AppointmentCalendarViewModel
+@using MediCare.Web.Services
+@{ ViewData["Title"] = "Appointment Schedule"; }
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4"><h1 class="fw-bold">Weekly Appointment Schedule</h1><a asp-action="Index" class="btn btn-outline-secondary">Appointment List</a></div>
+    <form asp-action="Calendar" method="get" class="row g-3 mb-4 align-items-end">
+        <div class="col-md-4"><label asp-for="Date" class="form-label">Week starting</label><input asp-for="Date" type="date" class="form-control" /></div>
+        <div class="col-md-5"><label asp-for="DoctorId" class="form-label">Doctor</label><select asp-for="DoctorId" asp-items="Model.Doctors" class="form-select"><option value="">All authorized doctors</option></select></div>
+        <div class="col-md-3"><button type="submit" class="btn btn-primary">View Schedule</button></div>
+    </form>
+    <p class="text-muted">All times in Asia/Colombo. Cancelled appointments remain visible for history.</p>
+    @for (var offset = 0; offset < 7; offset++)
+    {
+        var day = Model.Date.AddDays(offset);
+        var appointments = Model.Appointments.Where(a => DateOnly.FromDateTime(HospitalTime.Local(a.StartAtUtc)) == day).ToList();
+        <section class="card border-0 shadow-sm rounded-4 mb-3"><div class="card-body p-3"><h2 class="h5">@day.ToString("dddd, yyyy-MM-dd")</h2><partial name="_Rows" model="appointments" /></div></section>
+    }
+</div>

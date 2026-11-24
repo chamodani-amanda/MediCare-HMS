@@ -1,0 +1,22 @@
+@model List<MediCare.Web.Models.Patient>
+@{ ViewData["Title"] = "Archived Patients"; int page = ViewBag.Page; }
+<h1>Archived Patients</h1>
+<a asp-action="Index">Active Patients</a>
+<table class="table">
+    <thead><tr><th>Patient Number</th><th>Name</th><th>Actions</th></tr></thead>
+    <tbody>
+    @foreach (var patient in Model.Take(20))
+    {
+        <tr><td>@patient.PatientNumber</td><td>@patient.FirstName @patient.LastName</td><td>
+            <a asp-action="Details" asp-route-id="@patient.Id">View Profile</a>
+            <form asp-action="Reactivate" method="post" class="d-inline">
+                <input name="id" type="hidden" value="@patient.Id" />
+                <input name="version" type="hidden" value="@patient.Version" />
+                <button class="btn btn-outline-primary" type="submit">Reactivate</button>
+            </form>
+        </td></tr>
+    }
+    </tbody>
+</table>
+@if (page > 1) { <a asp-action="Archived" asp-route-page="@(page - 1)">Previous</a> }
+@if (Model.Count > 20) { <a asp-action="Archived" asp-route-page="@(page + 1)">Next</a> }

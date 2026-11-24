@@ -1,0 +1,6 @@
+@model MediCare.Web.ViewModels.LabRequestForm
+@{ViewData["Title"]="Request Laboratory Investigation";}
+<div class="py-4"><h1 class="fw-bold">Request Laboratory Investigation</h1><p>@Model.PatientLabel</p>
+<form asp-action="Create" method="post"><div asp-validation-summary="All" class="text-danger" role="alert"></div><input asp-for="MedicalRecordId" type="hidden"/><input asp-for="CreationToken" type="hidden"/>
+<div class="mb-4"><label asp-for="LabTestId" class="form-label">Active catalogue test</label><select asp-for="LabTestId" asp-items="Model.Tests" class="form-select" required><option value="">Select a test</option></select></div>
+<button class="btn btn-primary">Submit Request</button> <a asp-action="Index" class="btn btn-outline-secondary">Back to Laboratory Requests</a></form></div>

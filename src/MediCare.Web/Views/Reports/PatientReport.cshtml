@@ -1,0 +1,250 @@
+@model MediCare.Web.ViewModels.PatientReportViewModel
+
+@{
+    ViewData["Title"] = "Patient Report";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+            <h1 class="fw-bold">Patient Report</h1>
+            <p class="text-muted">
+                Patient registration and status overview.
+            </p>
+        </div>
+
+        <a asp-controller="Reports"
+           asp-action="Index"
+           class="btn btn-outline-secondary d-print-none">
+            Back to Reports
+        </a>
+
+    </div>
+
+    <!-- Summary cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <p class="text-muted mb-1">Total Patients</p>
+                    <h2 class="fw-bold">@Model.TotalPatients</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <p class="text-muted mb-1">Active Patients</p>
+                    <h2 class="fw-bold">@Model.ActivePatients</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <p class="text-muted mb-1">Archived Patients</p>
+                    <h2 class="fw-bold">@Model.ArchivedPatients</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 d-print-none">
+        <div class="card-body p-4">
+
+            <form asp-controller="Reports"
+                  asp-action="PatientReport"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-5">
+                    <label class="form-label">Search</label>
+
+                    <input type="search"
+                           name="search"
+                           value="@Model.Search"
+                           maxlength="100"
+                           class="form-control"
+                           placeholder="Patient number or name" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Patient Status</label>
+
+                    <select name="status" class="form-select">
+                        <option value="All"
+                                selected="@(Model.Status == "All")">
+                            All Patients
+                        </option>
+
+                        <option value="Active"
+                                selected="@(Model.Status == "Active")">
+                            Active
+                        </option>
+
+                        <option value="Archived"
+                                selected="@(Model.Status == "Archived")">
+                            Archived
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a asp-action="PatientReport"
+                       class="btn btn-outline-secondary w-100">
+                        Clear
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Patient table -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2 mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Patient Records (@Model.MatchingPatients)
+                </h5>
+
+                <div class="d-flex gap-2 d-print-none">
+
+                    <a asp-action="ExportPatientsCsv"
+                       asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status"
+                       class="btn btn-outline-success">
+                        Export CSV
+                    </a>
+
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-outline-primary">
+                        Print
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient Number</th>
+                            <th>Full Name</th>
+                            <th>Status</th>
+                            <th>Registered Date (UTC)</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var patient in Model.Patients)
+                        {
+                            <tr>
+                                <td>@patient.PatientNumber</td>
+
+                                <td>@patient.FullName</td>
+
+                                <td>
+                                    @if (patient.IsArchived)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Archived
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @patient.RegisteredAtUtc.ToString(
+                                        "yyyy-MM-dd HH:mm")
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.Patients.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4"
+                                    class="text-center text-muted py-4">
+                                    No matching patients found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between
+                            align-items-center mt-3 d-print-none">
+
+                    <span class="text-muted">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+
+                    <div class="d-flex gap-2">
+
+                        @if (Model.Page > 1)
+                        {
+                            <a asp-action="PatientReport"
+                               asp-route-page="@(Model.Page - 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               class="btn btn-outline-secondary btn-sm">
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a asp-action="PatientReport"
+                               asp-route-page="@(Model.Page + 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-status="@Model.Status"
+                               class="btn btn-outline-primary btn-sm">
+                                Next
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        Summary counts cover all registered patients.
+        Table results follow the selected filters.
+        Printing includes the current page of records only.
+    </p>
+
+</div>

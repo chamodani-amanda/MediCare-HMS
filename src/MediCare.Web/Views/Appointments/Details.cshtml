@@ -1,0 +1,23 @@
+@model MediCare.Web.ViewModels.AppointmentRowViewModel
+@using MediCare.Web.Services
+@using MediCare.Web.Models
+@{ ViewData["Title"] = "Appointment Details"; bool manager = User.IsInRole("Administrator") || User.IsInRole("Receptionist"); }
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4"><h1 class="fw-bold">Appointment Details</h1><a asp-action="Index" class="btn btn-outline-secondary">Back to Appointments</a></div>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-body p-4">
+        <dl class="row"><dt class="col-md-3">Patient</dt><dd class="col-md-9">@Model.PatientName (@Model.PatientNumber)</dd>
+            <dt class="col-md-3">Doctor</dt><dd class="col-md-9">Dr. @Model.DoctorName</dd>
+            <dt class="col-md-3">Date and time</dt><dd class="col-md-9">@HospitalTime.Local(Model.StartAtUtc).ToString("yyyy-MM-dd HH:mm") – @HospitalTime.Local(Model.EndAtUtc).ToString("HH:mm") (Asia/Colombo)</dd>
+            <dt class="col-md-3">Duration</dt><dd class="col-md-9">@Model.DurationMinutes minutes</dd>
+            <dt class="col-md-3">Status</dt><dd class="col-md-9"><span class="badge bg-primary">@Model.Status</span></dd>
+            @if (manager && Model.CancellationReason != null) { <dt class="col-md-3">Cancellation reason</dt><dd class="col-md-9 text-break">@Model.CancellationReason</dd> }
+        </dl>
+        @if (User.IsInRole("Doctor") && (Model.Status == AppointmentStatus.Scheduled || Model.Status == AppointmentStatus.Completed))
+        {
+            <div class="d-flex flex-wrap gap-2 mb-3"><a asp-controller="MedicalRecords" asp-action="Create" asp-route-appointmentId="@Model.Id" class="btn btn-primary">Consultation Record</a><a asp-controller="MedicalRecords" asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-outline-primary">Medical History</a></div>
+        }
+        @if (manager && Model.Status == AppointmentStatus.Scheduled)
+        { <div class="d-flex flex-wrap gap-2"><a asp-action="Reschedule" asp-route-id="@Model.Id" class="btn btn-primary">Reschedule</a><a asp-action="ChangeStatus" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel / Update Status</a></div> }
+        @if (Model.Status != AppointmentStatus.Scheduled) { <p class="text-muted mb-0">This appointment is retained in history. Its status is final.</p> }
+    </div></div>
+</div>

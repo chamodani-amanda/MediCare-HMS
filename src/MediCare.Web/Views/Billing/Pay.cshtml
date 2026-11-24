@@ -1,0 +1,7 @@
+@model MediCare.Web.ViewModels.PaymentForm
+@{ViewData["Title"]="Record payment";}
+<h1>Record payment</h1><p>Outstanding: LKR @(((decimal)ViewBag.Balance).ToString("N2"))</p><p>This records a payment received outside MediCare. It does not process a bank or card transaction.</p>
+<form method="post" class="col-lg-7"><div asp-validation-summary="All" class="text-danger"></div><input asp-for="InvoiceId" type="hidden"/><input asp-for="Token" type="hidden"/><input asp-for="Version" type="hidden"/>
+<div class="mb-3"><label asp-for="Amount" class="form-label">Amount (LKR)</label><input asp-for="Amount" type="number" min="0.01" max="999999999.99" step="0.01" class="form-control"/></div>
+<div class="mb-3"><label asp-for="Method" class="form-label"></label><select asp-for="Method" class="form-select"><option value="Cash">Cash</option><option value="BankTransfer">Manual bank transfer record</option></select></div>
+<div class="mb-3"><label asp-for="BankReference" class="form-label">Bank reference (bank transfer only)</label><input asp-for="BankReference" class="form-control" maxlength="100"/><small>Do not enter card numbers, account credentials or banking passwords.</small></div><button class="btn btn-primary">Record payment</button> <a asp-action="Details" asp-route-id="@Model.InvoiceId" class="btn btn-outline-secondary">Cancel</a></form>

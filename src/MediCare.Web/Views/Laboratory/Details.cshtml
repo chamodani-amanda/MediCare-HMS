@@ -1,0 +1,41 @@
+@model MediCare.Web.ViewModels.LabRequestDetails
+@using MediCare.Web.Models
+@using MediCare.Web.Services
+@{ViewData["Title"]="Laboratory Request";var r=Model.Request;}
+<div class="py-4"><div class="d-flex justify-content-between flex-wrap gap-3 mb-4"><h1 class="fw-bold">Laboratory Request</h1><a asp-action="Index" class="btn btn-outline-secondary">Back to Requests</a></div>
+<div class="card card-body border-0 shadow-sm rounded-4 mb-4"><h2 class="h4">@r.TestCode — @r.TestName</h2><dl class="row">
+<dt class="col-md-3">Patient</dt><dd class="col-md-9">@r.PatientLabel</dd><dt class="col-md-3">Requesting doctor</dt><dd class="col-md-9">Dr. @r.DoctorName</dd>
+<dt class="col-md-3">Category / format</dt><dd class="col-md-9">@r.Category / @r.ResultKind</dd><dt class="col-md-3">Sample type</dt><dd class="col-md-9">@r.SampleType</dd>
+<dt class="col-md-3">Sample identifier</dt><dd class="col-md-9 text-break">@(r.SampleIdentifier??"Awaiting collection")</dd><dt class="col-md-3">Status</dt><dd class="col-md-9"><span class="badge bg-primary">@r.Status</span></dd>
+<dt class="col-md-3">Requested</dt><dd class="col-md-9">@HospitalTime.Local(r.RequestedAtUtc).ToString("yyyy-MM-dd HH:mm") Asia/Colombo / @r.RequestedByUserId</dd>
+@if(r.CollectedAtUtc.HasValue){<dt class="col-md-3">Collected</dt><dd class="col-md-9">@HospitalTime.Local(r.CollectedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @r.CollectedByUserId</dd>}
+@if(r.ReceivedAtUtc.HasValue){<dt class="col-md-3">Received</dt><dd class="col-md-9">@HospitalTime.Local(r.ReceivedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @r.ReceivedByUserId</dd>}
+@if(r.ProcessingAtUtc.HasValue){<dt class="col-md-3">Processing started</dt><dd class="col-md-9">@HospitalTime.Local(r.ProcessingAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @r.ProcessingByUserId</dd>}
+@if(r.CancelledAtUtc.HasValue){<dt class="col-md-3">Cancelled</dt><dd class="col-md-9">@HospitalTime.Local(r.CancelledAtUtc.Value).ToString("yyyy-MM-dd HH:mm") / @r.CancelledByUserId</dd><dt class="col-md-3">Reason</dt><dd class="col-md-9 text-break">@r.CancellationReason</dd>}
+</dl></div>
+@if(Model.LaboratoryStaff)
+{
+    string? command=r.Status==LabRequestStatus.Requested?"Collect":r.Status==LabRequestStatus.SampleCollected?(r.ReceivedAtUtc==null?"Receive":"Process"):null;
+    @if(command!=null){<form asp-action="Progress" asp-route-id="@r.Id" method="post" class="mb-4"><input name="version" type="hidden" value="@r.Version"/><input name="command" type="hidden" value="@command"/><button class="btn btn-primary">@(command=="Collect"?"Record Sample Collection":command=="Receive"?"Confirm Sample Receipt":"Start Processing")</button></form>}
+    @if(r.Status==LabRequestStatus.InProgress && Model.LatestRevisionId==null){<a asp-action="EnterResult" asp-route-id="@r.Id" class="btn btn-primary mb-4">Enter Result</a>}
+}
+<h2 class="h4">Result revisions</h2>
+@foreach(var v in Model.Results)
+{
+<section class="card card-body mb-3"><h3 class="h5">Revision @v.Number — @(v.FinalizedAtUtc.HasValue?"Finalized":"Private draft")</h3>
+<p class="text-break" style="white-space:pre-wrap">@(v.NumericValue?.ToString("G29",System.Globalization.CultureInfo.InvariantCulture)??v.TextValue??"Not entered") @r.Unit</p>
+<p>Configured reference range: @(r.ReferenceRange??"Not configured")</p>
+@if(v.Comments!=null){<p class="text-break" style="white-space:pre-wrap">@v.Comments</p>}
+@if(v.CorrectionReason!=null){<p class="text-break">Correction reason: @v.CorrectionReason</p>}
+<p class="small text-muted">Author @v.AuthorUserId · Created @HospitalTime.Local(v.CreatedAtUtc).ToString("yyyy-MM-dd HH:mm") · Updated @HospitalTime.Local(v.UpdatedAtUtc).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</p>
+@if(v.FinalizedAtUtc.HasValue){<p class="small">Finalized @HospitalTime.Local(v.FinalizedAtUtc.Value).ToString("yyyy-MM-dd HH:mm") Asia/Colombo</p><div class="d-flex flex-wrap gap-2"><a asp-action="Report" asp-route-id="@v.Id" class="btn btn-outline-primary">Print / View Report</a><a asp-action="Report" asp-route-id="@v.Id" asp-route-pdf="true" class="btn btn-outline-primary">PDF (Latin script)</a></div>}
+@if(Model.LaboratoryStaff && v.AuthorUserId==Model.Account && r.Status!=LabRequestStatus.Cancelled)
+{
+    @if(!v.FinalizedAtUtc.HasValue){<div class="d-flex flex-wrap gap-2"><a asp-action="EditResult" asp-route-id="@v.Id" class="btn btn-primary">Edit Draft</a><form asp-action="FinalizeResult" asp-route-id="@v.Id" method="post"><input name="version" type="hidden" value="@v.Version"/><button class="btn btn-success">Validate and Finalize Result</button></form></div>}
+    else if(v.Id==Model.LatestRevisionId){<form asp-action="Correct" asp-route-id="@v.Id" method="post" class="mt-3"><input name="version" type="hidden" value="@v.Version"/><label for="correction-reason" class="form-label">Correction reason</label><textarea id="correction-reason" name="reason" required maxlength="1000" class="form-control mb-2" rows="2"></textarea><button class="btn btn-outline-primary">Start Correction Draft</button></form>}
+}
+</section>
+}
+@if(Model.Results.Count==0){<p class="text-muted">No results are available to your account. Finalized results remain in history.</p>}
+@if(Model.CanCancel){<form asp-action="Cancel" asp-route-id="@r.Id" method="post" class="card card-body mt-4"><input name="version" type="hidden" value="@r.Version"/><label for="cancel-reason" class="form-label">Cancellation reason</label><textarea id="cancel-reason" name="reason" maxlength="1000" required class="form-control mb-2" rows="2"></textarea><button class="btn btn-outline-danger align-self-start">Cancel Request</button></form>}
+</div>
